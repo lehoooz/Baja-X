@@ -11,12 +11,16 @@ public class PlayerMovement : MonoBehaviour
     [Tooltip("Centang jika hanya gerak Kiri-Kanan (2.5D). Matikan jika ingin gerak 3D bebas (WASD).")]
     [SerializeField] private bool is25DPlatformer = true;
 
+    [Header("Gravity")] // BARU
+    [SerializeField] private float riseGravity = 25f;   // gravitasi saat naik
+    [SerializeField] private float fallGravity = 45f;   // gravitasi saat turun (makin besar = makin berat)
+    [SerializeField] private float maxFallSpeed = 30f;  // batas kecepatan jatuh
+
     [Header("Ground Check")]
     [SerializeField] private Transform groundCheckTransform;
     [SerializeField] private float groundCheckRadius = 0.25f;
     [SerializeField] private LayerMask groundLayer;
 
-    // Menggunakan Vector2 agar reusable untuk 2.5D maupun 3D penuh
     public Vector2 MoveInput { get; private set; }
     public float Speed => speed;
     public bool isGround { get; private set; }
@@ -32,6 +36,7 @@ public class PlayerMovement : MonoBehaviour
     {
         actions = new InputSystem_Actions();
         rb = GetComponent<Rigidbody>();
+        rb.useGravity = false; // BARU: matikan gravitasi bawaan
     }
 
     private void OnEnable()
@@ -49,10 +54,7 @@ public class PlayerMovement : MonoBehaviour
     private void Update()
     {
         Vector2 rawInput = actions.Player.Move.ReadValue<Vector2>();
-
-        // Jika 2.5D, kunci sumbu Y input (depan-belakang) menjadi 0
         MoveInput = is25DPlatformer ? new Vector2(rawInput.x, 0f) : rawInput;
-
         isMoving = MoveInput.sqrMagnitude > 0.01f;
 
         GroundState();
@@ -61,13 +63,13 @@ public class PlayerMovement : MonoBehaviour
     private void FixedUpdate()
     {
         Moving();
+        ApplyGravity(); // BARU
     }
 
     private void Jumping(InputAction.CallbackContext ctx)
     {
         if (coyoteTimeCounter > 0f || maxJump > 0)
         {
-            // Di Unity 6, gunakan rb.linearVelocity dengan Vector3 untuk 3D
             rb.linearVelocity = new Vector3(rb.linearVelocity.x, jumpForce, rb.linearVelocity.z);
             maxJump--;
             coyoteTimeCounter = 0f;
@@ -76,15 +78,27 @@ public class PlayerMovement : MonoBehaviour
 
     private void Moving()
     {
-        // Menggerakkan sumbu X (kiri-kanan) dan sumbu Z (maju-mundur)
         rb.linearVelocity = new Vector3(MoveInput.x * speed, rb.linearVelocity.y, MoveInput.y * speed);
+    }
+
+    // BARU
+    private void ApplyGravity()
+    {
+        float g = rb.linearVelocity.y > 0 ? riseGravity : fallGravity;
+        rb.AddForce(Vector3.down * g, ForceMode.Acceleration);
+
+        if (rb.linearVelocity.y < -maxFallSpeed)
+        {
+            Vector3 v = rb.linearVelocity;
+            v.y = -maxFallSpeed;
+            rb.linearVelocity = v;
+        }
     }
 
     private void GroundState()
     {
         if (groundCheckTransform == null) return;
 
-        // Versi 3D dari Physics2D.OverlapCircle
         isGround = Physics.CheckSphere(groundCheckTransform.position, groundCheckRadius, groundLayer);
 
         if (isGround && !wasGround)
