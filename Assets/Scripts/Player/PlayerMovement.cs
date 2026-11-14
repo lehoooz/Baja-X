@@ -7,8 +7,8 @@ using UnityEngine.UIElements.Experimental;
 public class PlayerMovement : MonoBehaviour
 {
     [Header("Movement")]
-    [SerializeField] private float speed = 8f;
-    [SerializeField] private float jumpForce = 12f;
+    [SerializeField] private float speed = 10f;
+    [SerializeField] private float jumpForce = 15f;
     [SerializeField] private float coyoteTime = 0.15f;
     [Tooltip("Centang jika hanya gerak Kiri-Kanan (2.5D). Matikan jika ingin gerak 3D bebas (WASD).")]
     [SerializeField] private bool is25DPlatformer = true;
@@ -20,7 +20,7 @@ public class PlayerMovement : MonoBehaviour
 
 
     [Header("Gravity")] // BARU
-    [SerializeField] private float riseGravity = 25f;   // gravitasi saat naik
+    [SerializeField] private float riseGravity = 45f;   // gravitasi saat naik
     [SerializeField] private float fallGravity = 45f;   // gravitasi saat turun (makin besar = makin berat)
     [SerializeField] private float maxFallSpeed = 30f;  // batas kecepatan jatuh
 
@@ -29,12 +29,17 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float groundCheckRadius = 0.25f;
     [SerializeField] private LayerMask groundLayer;
 
-    [Header("Ledge Grab")]
+    [Header("Ledge Grab (bisa diubah2 sesuai bentuk)")]
     [SerializeField] private float ledgeForwardOffset = 0.5f;  // Jarak sensor ke depan badan
     [SerializeField] private float wallCheckHeight = 0.5f;     // Tinggi sensor Bawah (Dada)
     [SerializeField] private float ledgeCheckHeight = 1.2f;    // Tinggi sensor Atas (Kepala)
     [SerializeField] private float ledgeCheckRadius = 0.2f;    // Ukuran bola sensor
     [SerializeField] private float ledgeGrabCooldown = 0.25f;  // Jeda agar tidak langsung nempel lagi saat lepas
+
+    [Header("Wall Slide")]
+    [SerializeField] private float wallSlideSpeed = 3f;
+    [SerializeField] private float wallJumpForceX = 12f;    // BARU: Kekuatan pantul menjauhi dinding
+    [SerializeField] private float wallJumpLockTime = 0.5f; // BARU: Durasi kunci belok setelah pantul
 
     public Vector2 MoveInput { get; private set; }
     public float Speed => speed;
@@ -42,12 +47,14 @@ public class PlayerMovement : MonoBehaviour
     public bool isMoving { get; private set; }
     public bool isDashing { get; private set; }
     public bool isGrabbingLedge { get; private set; }
+    public bool isWallSliding { get; private set; }
 
     private bool wasGround;
     private bool canDash = true;
     private Vector2 lastMoveDirection = Vector2.right;
     private Vector2 rawMoveInput;
     private float ledgeCooldownCounter;
+    private float wallJumpLockCounter; // BARU: Timer pengunci gerak setelah wall jump
     private float coyoteTimeCounter;
     private InputSystem_Actions actions;
     private Rigidbody rb;
@@ -76,15 +83,24 @@ public class PlayerMovement : MonoBehaviour
 
     private void Update()
     {
-
         rawMoveInput = actions.Player.Move.ReadValue<Vector2>();
 
-        MoveInput = is25DPlatformer ? new Vector2(rawMoveInput.x, 0f) : rawMoveInput;
-        isMoving = MoveInput.sqrMagnitude > 0.01f;
-
-        if (Mathf.Abs(rawMoveInput.x) > 0.01f)
+        // BARU: Saat baru memantul dari dinding, kunci input & arah hadap menjauhi dinding
+        if (wallJumpLockCounter > 0f)
         {
-            lastMoveDirection = new Vector2(Mathf.Sign(rawMoveInput.x), 0f);
+            wallJumpLockCounter -= Time.deltaTime;
+            MoveInput = lastMoveDirection;
+            isMoving = true;
+        }
+        else
+        {
+            MoveInput = is25DPlatformer ? new Vector2(rawMoveInput.x, 0f) : rawMoveInput;
+            isMoving = MoveInput.sqrMagnitude > 0.01f;
+
+            if (Mathf.Abs(rawMoveInput.x) > 0.01f)
+            {
+                lastMoveDirection = new Vector2(Mathf.Sign(rawMoveInput.x), 0f);
+            }
         }
 
         GroundState();
@@ -103,10 +119,25 @@ public class PlayerMovement : MonoBehaviour
     {
         if (isDashing) return;
 
-        if (coyoteTimeCounter > 0f || isGrabbingLedge)
+        // 1. BARU: Jika melompat dari posisi Wall Slide (Pantul Menjauhi Dinding)
+        if (isWallSliding)
         {
-            isGrabbingLedge = false;                   // Lepaskan status menggantung
-            ledgeCooldownCounter = ledgeGrabCooldown;  // Beri jeda agar tidak langsung nyangkut lagi
+            isWallSliding = false;
+            ledgeCooldownCounter = ledgeGrabCooldown;
+            wallJumpLockCounter = wallJumpLockTime; // Aktifkan kunci input 0.2 detik
+
+            // Balikkan arah hadap karakter menjauhi dinding
+            lastMoveDirection = -lastMoveDirection;
+
+            // Lontarkan karakter miring ke atas dan menjauhi dinding
+            rb.linearVelocity = new Vector3(lastMoveDirection.x * wallJumpForceX, jumpForce, lastMoveDirection.y * wallJumpForceX);
+            coyoteTimeCounter = 0f;
+        }
+        // 2. TETAP SAMA: Lompat biasa dari tanah atau Ledge Grab
+        else if (coyoteTimeCounter > 0f || isGrabbingLedge)
+        {
+            isGrabbingLedge = false;
+            ledgeCooldownCounter = ledgeGrabCooldown;
 
             rb.linearVelocity = new Vector3(rb.linearVelocity.x, jumpForce, rb.linearVelocity.z);
             coyoteTimeCounter = 0f;
@@ -115,6 +146,7 @@ public class PlayerMovement : MonoBehaviour
 
     private void Moving()
     {
+        if (wallJumpLockCounter > 0f) return; // BARU: Jangan timpa kecepatan lontaran wallJumpForceX
         rb.linearVelocity = new Vector3(MoveInput.x * speed, rb.linearVelocity.y, MoveInput.y * speed);
     }
 
@@ -132,6 +164,8 @@ public class PlayerMovement : MonoBehaviour
         canDash = false;
         isDashing = true;
         isGrabbingLedge = false;
+        isWallSliding = false;     // BARU
+        wallJumpLockCounter = 0f;  // BARU
 
         // Fase 2: Tentukan Arah & Berikan Kecepatan (DIUBAH)
         bool hasRawInput = rawMoveInput.sqrMagnitude > 0.01f;
@@ -168,16 +202,19 @@ public class PlayerMovement : MonoBehaviour
         float g = rb.linearVelocity.y > 0 ? riseGravity : fallGravity;
         rb.AddForce(Vector3.down * g, ForceMode.Acceleration);
 
-        if (rb.linearVelocity.y < -maxFallSpeed)
+        float currentMaxFall = isWallSliding ? wallSlideSpeed : maxFallSpeed;
+
+        if (rb.linearVelocity.y < -currentMaxFall)
         {
             Vector3 v = rb.linearVelocity;
-            v.y = -maxFallSpeed;
+            v.y = -currentMaxFall;
             rb.linearVelocity = v;
         }
     }
 
     private void GroundState()
     {
+
         if (groundCheckTransform == null) return;
 
         isGround = Physics.CheckSphere(groundCheckTransform.position, groundCheckRadius, groundLayer);
@@ -201,6 +238,8 @@ public class PlayerMovement : MonoBehaviour
 
     private void LedgeState()
     {
+        isWallSliding = false;
+
         // Kurangi timer cooldown jika masih ada
         if (ledgeCooldownCounter > 0f)
         {
@@ -237,6 +276,11 @@ public class PlayerMovement : MonoBehaviour
         {
             isGrabbingLedge = true;
             rb.linearVelocity = Vector3.zero; // Hentikan kecepatan jatuh seketika
+        }
+
+        else if(isTouchingWall && isMoving)
+        {
+            isWallSliding = true;
         }
     }
 

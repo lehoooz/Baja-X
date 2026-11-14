@@ -689,7 +689,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: -8679921383154817045, guid: fcd1a54c6fbc7c04ca9bc4ea618562e7, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -6.37
+      value: 108
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: fcd1a54c6fbc7c04ca9bc4ea618562e7, type: 3}
       propertyPath: m_LocalPosition.y
@@ -854,6 +854,9 @@ MonoBehaviour:
   ledgeCheckHeight: 2.07
   ledgeCheckRadius: 0.2
   ledgeGrabCooldown: 0.25
+  wallSlideSpeed: 3
+  wallJumpForceX: 12
+  wallJumpLockTime: 0.5
 --- !u!114 &700231509
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1299,7 +1302,7 @@ Transform:
   m_GameObject: {fileID: 742200346}
   serializedVersion: 2
   m_LocalRotation: {x: -0.037509616, y: 0.018224828, z: 0.0006842017, w: 0.99912983}
-  m_LocalPosition: {x: -3.9647431, y: 5.888673, z: -13.736758}
+  m_LocalPosition: {x: 110.40526, y: 5.888673, z: -13.736758}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -2185,7 +2188,7 @@ Transform:
   m_GameObject: {fileID: 1371377148}
   serializedVersion: 2
   m_LocalRotation: {x: -0.037509616, y: 0.018224828, z: 0.0006842017, w: 0.99912983}
-  m_LocalPosition: {x: -3.9647431, y: 5.888673, z: -13.736758}
+  m_LocalPosition: {x: 110.40526, y: 5.888673, z: -13.736758}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
