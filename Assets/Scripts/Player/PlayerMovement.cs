@@ -1,7 +1,6 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.UIElements.Experimental;
 
 [RequireComponent(typeof(Rigidbody))]
 public class PlayerMovement : MonoBehaviour
@@ -18,8 +17,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float dashDistance = 7f;
     [SerializeField] private float dashCooldown = 1f;
 
-
-    [Header("Gravity")] // BARU
+    [Header("Gravity")]
     [SerializeField] private float riseGravity = 45f;   // gravitasi saat naik
     [SerializeField] private float fallGravity = 45f;   // gravitasi saat turun (makin besar = makin berat)
     [SerializeField] private float maxFallSpeed = 30f;  // batas kecepatan jatuh
@@ -38,8 +36,9 @@ public class PlayerMovement : MonoBehaviour
 
     [Header("Wall Slide")]
     [SerializeField] private float wallSlideSpeed = 3f;
-    [SerializeField] private float wallJumpForceX = 12f;    // BARU: Kekuatan pantul menjauhi dinding
-    [SerializeField] private float wallJumpLockTime = 0.5f; // BARU: Durasi kunci belok setelah pantul
+    [SerializeField] private float wallJumpForceX = 12f;    // Kekuatan pantul menjauhi dinding
+    [SerializeField] private float wallJumpLockTime = 0.5f; // Durasi kunci belok setelah pantul
+    [SerializeField] private float wallCoyoteTime = 0.15f;  // Toleransi waktu lepas dari dinding
 
     public Vector2 MoveInput { get; private set; }
     public float Speed => speed;
@@ -53,18 +52,19 @@ public class PlayerMovement : MonoBehaviour
     private bool canDash = true;
     private Vector2 lastMoveDirection = Vector2.right;
     private Vector2 rawMoveInput;
+    private Vector2 wallDir;             // Mengingat arah dinding terakhir
     private float ledgeCooldownCounter;
-    private float wallJumpLockCounter; // BARU: Timer pengunci gerak setelah wall jump
+    private float wallJumpLockCounter;   // Timer pengunci gerak setelah wall jump
     private float coyoteTimeCounter;
+    private float wallCoyoteTimeCounter; // Timer toleransi wall jump
     private InputSystem_Actions actions;
     private Rigidbody rb;
-    //private int maxJump = 2;
 
     private void Awake()
     {
         actions = new InputSystem_Actions();
         rb = GetComponent<Rigidbody>();
-        rb.useGravity = false; // BARU: matikan gravitasi bawaan
+        rb.useGravity = false; // Matikan gravitasi bawaan
     }
 
     private void OnEnable()
@@ -85,7 +85,7 @@ public class PlayerMovement : MonoBehaviour
     {
         rawMoveInput = actions.Player.Move.ReadValue<Vector2>();
 
-        // BARU: Saat baru memantul dari dinding, kunci input & arah hadap menjauhi dinding
+        // Saat baru memantul dari dinding, kunci input & arah hadap menjauhi dinding
         if (wallJumpLockCounter > 0f)
         {
             wallJumpLockCounter -= Time.deltaTime;
@@ -112,28 +112,29 @@ public class PlayerMovement : MonoBehaviour
         if (isDashing || isGrabbingLedge) return;
 
         Moving();
-        ApplyGravity(); // BARU
+        ApplyGravity();
     }
 
     private void Jumping(InputAction.CallbackContext ctx)
     {
         if (isDashing) return;
 
-        // 1. BARU: Jika melompat dari posisi Wall Slide (Pantul Menjauhi Dinding)
-        if (isWallSliding)
+        // 1. Jika melompat dari posisi Wall Slide atau masih dalam toleransi Wall Coyote Time
+        if (isWallSliding || wallCoyoteTimeCounter > 0f)
         {
             isWallSliding = false;
+            wallCoyoteTimeCounter = 0f;
             ledgeCooldownCounter = ledgeGrabCooldown;
-            wallJumpLockCounter = wallJumpLockTime; // Aktifkan kunci input 0.2 detik
+            wallJumpLockCounter = wallJumpLockTime;
 
-            // Balikkan arah hadap karakter menjauhi dinding
-            lastMoveDirection = -lastMoveDirection;
+            // Balikkan arah hadap karakter menjauhi dinding terakhir (wallDir)
+            lastMoveDirection = -wallDir;
 
             // Lontarkan karakter miring ke atas dan menjauhi dinding
             rb.linearVelocity = new Vector3(lastMoveDirection.x * wallJumpForceX, jumpForce, lastMoveDirection.y * wallJumpForceX);
             coyoteTimeCounter = 0f;
         }
-        // 2. TETAP SAMA: Lompat biasa dari tanah atau Ledge Grab
+        // 2. Lompat biasa dari tanah atau Ledge Grab
         else if (coyoteTimeCounter > 0f || isGrabbingLedge)
         {
             isGrabbingLedge = false;
@@ -146,13 +147,13 @@ public class PlayerMovement : MonoBehaviour
 
     private void Moving()
     {
-        if (wallJumpLockCounter > 0f) return; // BARU: Jangan timpa kecepatan lontaran wallJumpForceX
+        if (wallJumpLockCounter > 0f) return; // Jangan timpa kecepatan lontaran wallJumpForceX
         rb.linearVelocity = new Vector3(MoveInput.x * speed, rb.linearVelocity.y, MoveInput.y * speed);
     }
 
     private void Dashing(InputAction.CallbackContext ctx)
     {
-        if ( canDash && !isDashing)
+        if (canDash && !isDashing)
         {
             StartCoroutine(DashRoutine());
         }
@@ -164,10 +165,11 @@ public class PlayerMovement : MonoBehaviour
         canDash = false;
         isDashing = true;
         isGrabbingLedge = false;
-        isWallSliding = false;     // BARU
-        wallJumpLockCounter = 0f;  // BARU
+        isWallSliding = false;
+        wallJumpLockCounter = 0f;
+        wallCoyoteTimeCounter = 0f;
 
-        // Fase 2: Tentukan Arah & Berikan Kecepatan (DIUBAH)
+        // Fase 2: Tentukan Arah & Berikan Kecepatan
         bool hasRawInput = rawMoveInput.sqrMagnitude > 0.01f;
         Vector2 dashDir = hasRawInput ? rawMoveInput.normalized : lastMoveDirection;
 
@@ -186,7 +188,7 @@ public class PlayerMovement : MonoBehaviour
         float dashDuration = dashDistance / dashSpeed;
         yield return new WaitForSeconds(dashDuration);
 
-        // OPSIONAL: Rem sedikit kecepatan ke atas setelah dash selesai
+        // Rem kecepatan setelah dash selesai
         rb.linearVelocity = Vector3.zero;
 
         isDashing = false;
@@ -196,7 +198,6 @@ public class PlayerMovement : MonoBehaviour
         canDash = true;
     }
 
-    // BARU
     private void ApplyGravity()
     {
         float g = rb.linearVelocity.y > 0 ? riseGravity : fallGravity;
@@ -214,15 +215,9 @@ public class PlayerMovement : MonoBehaviour
 
     private void GroundState()
     {
-
         if (groundCheckTransform == null) return;
 
         isGround = Physics.CheckSphere(groundCheckTransform.position, groundCheckRadius, groundLayer);
-
-        //if (isGround && !wasGround)
-        //{
-        //    maxJump = 2;
-        //}
 
         if (isGround)
         {
@@ -239,6 +234,16 @@ public class PlayerMovement : MonoBehaviour
     private void LedgeState()
     {
         isWallSliding = false;
+
+        // Kurangi timer toleransi wall coyote (atau nol-kan jika di tanah)
+        if (isGround)
+        {
+            wallCoyoteTimeCounter = 0f;
+        }
+        else if (wallCoyoteTimeCounter > 0f)
+        {
+            wallCoyoteTimeCounter -= Time.deltaTime;
+        }
 
         // Kurangi timer cooldown jika masih ada
         if (ledgeCooldownCounter > 0f)
@@ -275,12 +280,14 @@ public class PlayerMovement : MonoBehaviour
         if (isTouchingWall && !isTouchingLedgeTop)
         {
             isGrabbingLedge = true;
+            wallCoyoteTimeCounter = 0f;
             rb.linearVelocity = Vector3.zero; // Hentikan kecepatan jatuh seketika
         }
-
-        else if(isTouchingWall && isMoving)
+        else if (isTouchingWall && isMoving)
         {
             isWallSliding = true;
+            wallCoyoteTimeCounter = wallCoyoteTime; // Isi penuh waktu toleransi
+            wallDir = lastMoveDirection;            // Catat arah dinding tempat menempel
         }
     }
 
@@ -292,7 +299,7 @@ public class PlayerMovement : MonoBehaviour
             Gizmos.DrawWireSphere(groundCheckTransform.position, groundCheckRadius);
         }
 
-        // BARU: Visualisasi 2 Sensor Ledge Grab
+        // Visualisasi 2 Sensor Ledge Grab & Wall Slide
         Vector3 facingDir = new Vector3(lastMoveDirection.x, 0f, lastMoveDirection.y).normalized;
         if (facingDir == Vector3.zero) facingDir = Vector3.right;
 
