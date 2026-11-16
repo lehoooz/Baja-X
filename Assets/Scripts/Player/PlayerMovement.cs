@@ -28,9 +28,9 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private LayerMask groundLayer;
 
     [Header("Ledge Grab (bisa diubah2 sesuai bentuk)")]
-    [SerializeField] private float ledgeForwardOffset = 0.5f;  // Jarak sensor ke depan badan
-    [SerializeField] private float wallCheckHeight = 0.5f;     // Tinggi sensor Bawah (Dada)
-    [SerializeField] private float ledgeCheckHeight = 1.2f;    // Tinggi sensor Atas (Kepala)
+    [SerializeField] private float ledgeForwardOffset = 0.14f;  // Jarak sensor ke depan badan
+    [SerializeField] private float wallCheckHeight = 2.46f;     // Tinggi sensor Bawah (Dada)
+    [SerializeField] private float ledgeCheckHeight = 2.89f;    // Tinggi sensor Atas (Kepala)
     [SerializeField] private float ledgeCheckRadius = 0.2f;    // Ukuran bola sensor
     [SerializeField] private float ledgeGrabCooldown = 0.25f;  // Jeda agar tidak langsung nempel lagi saat lepas
 
