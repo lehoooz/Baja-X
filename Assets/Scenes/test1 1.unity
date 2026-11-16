@@ -809,7 +809,7 @@ MonoBehaviour:
   coyoteTime: 0.15
   is25DPlatformer: 1
   dashSpeed: 50
-  dashDistance: 7
+  dashDistance: 50
   dashCooldown: 1
   riseGravity: 45
   fallGravity: 45
@@ -1273,7 +1273,7 @@ Transform:
   m_GameObject: {fileID: 742200346}
   serializedVersion: 2
   m_LocalRotation: {x: -0.037509616, y: 0.018224828, z: 0.0006842017, w: 0.99912983}
-  m_LocalPosition: {x: 110.30815, y: 5.888673, z: -13.733215}
+  m_LocalPosition: {x: 109.54184, y: 5.888673, z: -13.70525}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -2159,7 +2159,7 @@ Transform:
   m_GameObject: {fileID: 1371377148}
   serializedVersion: 2
   m_LocalRotation: {x: -0.037509616, y: 0.018224828, z: 0.0006842017, w: 0.99912983}
-  m_LocalPosition: {x: 110.30815, y: 5.888673, z: -13.733215}
+  m_LocalPosition: {x: 109.54184, y: 5.888673, z: -13.70525}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
