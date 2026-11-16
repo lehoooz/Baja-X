@@ -21,7 +21,7 @@ ModelImporter:
     resampleCurves: 1
     optimizeGameObjects: 0
     removeConstantScaleCurves: 0
-    motionNodeName: 
+    motionNodeName: Armature
     animationImportErrors: 
     animationImportWarnings: 
     animationRetargetingWarnings: 

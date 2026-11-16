@@ -840,7 +840,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3f10cf07cc14eee4a8e583268ba2623d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerAnimation
-  rotationSpeed: 15
+  rotationSpeed: 50
   dashTrail: {fileID: 0}
 --- !u!96 &700231511
 TrailRenderer:

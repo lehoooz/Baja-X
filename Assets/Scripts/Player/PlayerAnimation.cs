@@ -3,7 +3,7 @@ using UnityEngine;
 [RequireComponent(typeof(PlayerMovement))]
 public class PlayerAnimation : MonoBehaviour
 {
-    [SerializeField] private float rotationSpeed = 15f;
+    [SerializeField] private float rotationSpeed = 50f;
 
     [Header("Dash Visual")]
     [SerializeField] private TrailRenderer dashTrail;
@@ -30,7 +30,7 @@ public class PlayerAnimation : MonoBehaviour
         anim.SetBool("isRunning", movement.isMoving);
         anim.SetFloat("animSpeed", movement.Speed / 5f);
         anim.SetBool("isJumping", !movement.isGround);
-        //anim.SetBool("isDashing", movement.isDashing);
+        anim.SetBool("isDashing", movement.isDashing);
 
         HandleVisual();
 
