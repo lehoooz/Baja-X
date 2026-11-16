@@ -29,8 +29,9 @@ public class PlayerAnimation : MonoBehaviour
         // Mengirim parameter ke Animator persis seperti kode 2D-mu
         anim.SetBool("isRunning", movement.isMoving);
         anim.SetFloat("animSpeed", movement.Speed / 5f);
-        anim.SetBool("isJumping", !movement.isGround && !movement.isDashing);
+        anim.SetBool("isJumping", !movement.isGround && !movement.isDashing && !movement.isGrabbingLedge);
         anim.SetBool("isDashing", movement.isDashing);
+        anim.SetBool("isHanging", movement.isGrabbingLedge);
 
         HandleVisual();
 

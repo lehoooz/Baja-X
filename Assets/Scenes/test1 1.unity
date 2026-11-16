@@ -819,7 +819,7 @@ MonoBehaviour:
   groundLayer:
     serializedVersion: 2
     m_Bits: 8
-  ledgeForwardOffset: 0.14
+  ledgeForwardOffset: 0.55
   wallCheckHeight: 2.46
   ledgeCheckHeight: 2.89
   ledgeCheckRadius: 0.2
@@ -1273,7 +1273,7 @@ Transform:
   m_GameObject: {fileID: 742200346}
   serializedVersion: 2
   m_LocalRotation: {x: -0.037509616, y: 0.018224828, z: 0.0006842017, w: 0.99912983}
-  m_LocalPosition: {x: 109.47098, y: 5.888673, z: -13.702663}
+  m_LocalPosition: {x: 110.45512, y: 5.888673, z: -13.738578}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -2159,7 +2159,7 @@ Transform:
   m_GameObject: {fileID: 1371377148}
   serializedVersion: 2
   m_LocalRotation: {x: -0.037509616, y: 0.018224828, z: 0.0006842017, w: 0.99912983}
-  m_LocalPosition: {x: 109.47098, y: 5.888673, z: -13.702663}
+  m_LocalPosition: {x: 110.45512, y: 5.888673, z: -13.738578}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
