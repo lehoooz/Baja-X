@@ -29,12 +29,19 @@ public class PlayerAnimation : MonoBehaviour
         // Mengirim parameter ke Animator persis seperti kode 2D-mu
         anim.SetBool("isRunning", movement.isMoving);
         anim.SetFloat("animSpeed", movement.Speed / 5f);
-        anim.SetBool("isJumping", !movement.isGround && !movement.isDashing && !movement.isGrabbingLedge);
+        anim.SetBool("isJumping", !movement.isGround && !movement.isDashing && !movement.isGrabbingLedge && !movement.isWallSliding);
         anim.SetBool("isDashing", movement.isDashing);
         anim.SetBool("isHanging", movement.isGrabbingLedge);
+        anim.SetBool("isWallSliding", movement.isWallSliding);
 
         HandleVisual();
-
+        if (movement.isWallSliding)
+        {
+            Vector3 away = new Vector3(-move.x, 0f, -move.y);
+            if (away != Vector3.zero)
+                transform.rotation = Quaternion.LookRotation(away);
+            return; // lewati rotasi biasa
+        }
         // Menggantikan fungsi sprite.flipX dengan rotasi 3D
         if (movement.isMoving)
         {
