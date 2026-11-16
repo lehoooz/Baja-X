@@ -8,6 +8,15 @@ public class PlayerAnimation : MonoBehaviour
     [Header("Dash Visual")]
     [SerializeField] private TrailRenderer dashTrail;
 
+    [Header("Dash Tint")]
+    [SerializeField] private Color dashTint = new Color(1.5f, 2.5f, 3f, 1f); // terang kebiruan
+    [SerializeField] private float tintSmooth = 20f;
+
+    private Renderer[] renderers;
+    private MaterialPropertyBlock block;
+    private Color currentTint = Color.white;
+    private static readonly int BaseColorId = Shader.PropertyToID("_BaseColor"); // URP
+
     private Color originalColor;
     private PlayerMovement movement;
     private Animator anim;
@@ -17,7 +26,10 @@ public class PlayerAnimation : MonoBehaviour
         movement = GetComponent<PlayerMovement>();
         // GetComponentInChildren berjaga-jaga jika Animator ada di child object
         anim = GetComponentInChildren<Animator>();
-        dashTrail = GetComponent<TrailRenderer>();
+        if (dashTrail == null) dashTrail = GetComponentInChildren<TrailRenderer>();
+        if (dashTrail != null) dashTrail.emitting = false;
+        renderers = GetComponentsInChildren<Renderer>();
+        block = new MaterialPropertyBlock();
 
         dashTrail.emitting = false;
     }
@@ -54,8 +66,17 @@ public class PlayerAnimation : MonoBehaviour
     private void HandleVisual()
     {
         if (dashTrail != null)
-        {
             dashTrail.emitting = movement.isDashing;
+
+        Color target = movement.isDashing ? dashTint : Color.white;
+        currentTint = Color.Lerp(currentTint, target, tintSmooth * Time.deltaTime);
+
+        foreach (var r in renderers)
+        {
+            if (r is TrailRenderer) continue; // jangan ikut diwarnai
+            r.GetPropertyBlock(block);
+            block.SetColor(BaseColorId, currentTint);
+            r.SetPropertyBlock(block);
         }
     }
 }
