@@ -4,14 +4,23 @@ using UnityEngine;
 public class PlayerAnimation : MonoBehaviour
 {
     [SerializeField] private float rotationSpeed = 50f;
+    [SerializeField] private float shootSmothAnimation = 5f;
 
     private PlayerMovement movement;
     private Animator anim;
+    private PlayerShoot shoot;
+    private int shootLayerIndex;
+    private float shootWeight;
+
+
 
     private void Awake()
     {
         movement = GetComponent<PlayerMovement>();
         anim = GetComponentInChildren<Animator>();
+        shoot = GetComponent<PlayerShoot>();
+        shootLayerIndex = anim.GetLayerIndex("Shoot");
+
     }
 
     private void Update()
@@ -24,6 +33,14 @@ public class PlayerAnimation : MonoBehaviour
         anim.SetBool("isDashing", movement.isDashing);
         anim.SetBool("isHanging", movement.isGrabbingLedge);
         anim.SetBool("isWallSliding", movement.isWallSliding);
+
+        if (shoot != null && shootLayerIndex >= 0)
+        {
+            float targetWeight = shoot.isShooting ? 1f : 0f;
+            shootWeight = Mathf.MoveTowards(shootWeight, targetWeight, Time.deltaTime * shootSmothAnimation);
+            anim.SetLayerWeight(shootLayerIndex, shootWeight);
+        }
+
 
         if (movement.isWallSliding)
         {
