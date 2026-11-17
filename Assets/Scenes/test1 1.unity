@@ -808,26 +808,16 @@ MonoBehaviour:
   jumpForce: 15
   coyoteTime: 0.15
   is25DPlatformer: 1
-  dashSpeed: 50
-  dashDistance: 7
-  dashCooldown: 1
   riseGravity: 45
   fallGravity: 45
   maxFallSpeed: 30
+  wallJumpForceX: 12
+  wallJumpLockTime: 0.5
   groundCheckTransform: {fileID: 1099107911}
   groundCheckRadius: 0.25
   groundLayer:
     serializedVersion: 2
     m_Bits: 8
-  ledgeForwardOffset: 0.55
-  wallCheckHeight: 2.46
-  ledgeCheckHeight: 2.89
-  ledgeCheckRadius: 0.2
-  ledgeGrabCooldown: 0.25
-  wallSlideSpeed: 3
-  wallJumpForceX: 12
-  wallJumpLockTime: 0.5
-  wallCoyoteTime: 0.5
 --- !u!114 &700231509
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -841,9 +831,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerAnimation
   rotationSpeed: 50
-  dashTrail: {fileID: 1947721170}
-  dashTint: {r: 1.5, g: 2.5, b: 3, a: 1}
-  tintSmooth: 50
 --- !u!1 &733383572
 GameObject:
   m_ObjectHideFlags: 0
@@ -3193,6 +3180,9 @@ GameObject:
   - component: {fileID: 700231505}
   - component: {fileID: 700231509}
   - component: {fileID: 700231508}
+  - component: {fileID: 5866666021216850658}
+  - component: {fileID: 5866666021216850657}
+  - component: {fileID: 5866666021216850656}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -3222,6 +3212,56 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &5866666021216850656
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 919132148780339743}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a5d3e5ed6522b6541ae8d132c0b43e7b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerDashVisual
+  dashTrail: {fileID: 1947721170}
+  trailWidth: 1.6
+  dashTint: {r: 1.5, g: 2.5, b: 3, a: 1}
+  tintSmooth: 20
+--- !u!114 &5866666021216850657
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 919132148780339743}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dad525cc8cd22fc438e6d00e55b70fe2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerDash
+  dashSpeed: 50
+  dashDistance: 7
+  dashCooldown: 1
+--- !u!114 &5866666021216850658
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 919132148780339743}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 039cc03e935a827468739c24138fa3df, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerLedgeWall
+  ledgeForwardOffset: 0.14
+  wallCheckHeight: 2.46
+  ledgeCheckHeight: 2.89
+  ledgeCheckRadius: 0.2
+  ledgeGrabCooldown: 0.25
+  wallSlideSpeed: 3
+  wallCoyoteTime: 0.15
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
