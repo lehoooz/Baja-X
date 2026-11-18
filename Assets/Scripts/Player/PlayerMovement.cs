@@ -25,6 +25,10 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float groundCheckRadius = 0.25f;
     [SerializeField] private LayerMask groundLayer;
 
+    [Header("Knockback")]
+    [SerializeField] private float knockbackDuration = 0.25f;
+
+
     // ===== Data yang dibaca script lain =====
     public InputSystem_Actions Actions { get; private set; }
     public Rigidbody Rb { get; private set; }
@@ -46,6 +50,8 @@ public class PlayerMovement : MonoBehaviour
     private float coyoteTimeCounter;
     private PlayerDash dash;
     private PlayerLedgeWall wall;
+    private Vector3 knockbackVelocity;
+    private float knockbackTimer;
 
     private void Awake()
     {
@@ -132,8 +138,30 @@ public class PlayerMovement : MonoBehaviour
     private void Moving()
     {
         if (WallJumpLockCounter > 0f) return;
+
+        if (knockbackTimer > 0f)
+        {
+            knockbackTimer -= Time.fixedDeltaTime;
+            Rb.linearVelocity = new Vector3(knockbackVelocity.x, Rb.linearVelocity.y, knockbackVelocity.z);
+            return;
+        }
+
         Rb.linearVelocity = new Vector3(MoveInput.x * speed, Rb.linearVelocity.y, MoveInput.y * speed);
     }
+
+    // ---------- Knockback ----------
+    public void ApplyKnockback(Vector3 direction, float force, float popUp = 5f)
+    {
+        direction.y = 0f;
+        knockbackVelocity = direction.normalized * force;
+        knockbackTimer = knockbackDuration;
+
+        // Pop ke atas sekali
+        Vector3 v = Rb.linearVelocity;
+        v.y = popUp;
+        Rb.linearVelocity = v;
+    }
+
 
     // ---------- Gravitasi ----------
     private void ApplyGravity()

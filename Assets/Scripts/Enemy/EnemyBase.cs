@@ -1,12 +1,17 @@
 using UnityEngine;
 
 /// <summary>
-/// Base class semua musuh. Pegang Health, dan hancurkan diri saat HP habis.
-/// Varian (Walker / Turret / Flyer) tinggal turun dari class ini.
+/// Base class semua musuh. Pegang Health, hancurkan diri saat HP habis,
+/// dan beri damage saat menyentuh pemain.
 /// </summary>
 [RequireComponent(typeof(Health))]
 public abstract class EnemyBase : MonoBehaviour
 {
+    [Header("Contact Damage")]
+    [SerializeField] private int contactDamage = 1;
+    [SerializeField] private float knockbackForce = 8f;
+    [SerializeField] private float knockbackPopUp = 5f;
+
     protected Health health;
 
     protected virtual void Awake()
@@ -19,5 +24,25 @@ public abstract class EnemyBase : MonoBehaviour
     {
         // Nanti: efek ledakan / drop item di sini
         Destroy(gameObject);
+    }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        // Hanya damage pemain (yang punya PlayerMovement)
+        PlayerMovement pm = collision.collider.GetComponentInParent<PlayerMovement>();
+        if (pm == null) return;
+
+        Health playerHealth = collision.collider.GetComponentInParent<Health>();
+        if (playerHealth == null) return;
+
+        int hpBefore = playerHealth.CurrentHealth;
+        playerHealth.TakeDamage(contactDamage);
+
+        // Knockback hanya kalau damage benar-benar masuk (tidak ketahan i-frames)
+        if (playerHealth.CurrentHealth < hpBefore)
+        {
+            Vector3 dir = collision.transform.position - transform.position;
+            pm.ApplyKnockback(dir, knockbackForce, knockbackPopUp);
+        }
     }
 }

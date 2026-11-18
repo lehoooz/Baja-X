@@ -64,4 +64,13 @@ public class Health : MonoBehaviour
         if (currentHealth > maxHealth) currentHealth = maxHealth;
         OnHealthChanged?.Invoke(currentHealth, maxHealth);
     }
+
+    /// <summary> Kembalikan HP ke penuh (dipakai saat respawn). </summary>
+    public void ResetHealth()
+    {
+        currentHealth = maxHealth;
+        invincibilityTimer = 0f;
+        OnHealthChanged?.Invoke(currentHealth, maxHealth);
+    }
+
 }
