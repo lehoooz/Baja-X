@@ -152,6 +152,11 @@ public class PlayerMovement : MonoBehaviour
     // ---------- Knockback ----------
     public void ApplyKnockback(Vector3 direction, float force, float popUp = 10f)
     {
+        // Batalkan hanging / wall slide dulu, kalau tidak FixedUpdate akan
+        // return terus dan gravitasi tidak jalan (jadinya terbang terus)
+        wall.ReleaseLedge();
+        wall.ReleaseWall();
+
         direction.y = 0f;
         knockbackVelocity = direction.normalized * force;
         knockbackTimer = knockbackDuration;
@@ -161,6 +166,7 @@ public class PlayerMovement : MonoBehaviour
         v.y = popUp;
         Rb.linearVelocity = v;
     }
+
 
 
     // ---------- Gravitasi ----------

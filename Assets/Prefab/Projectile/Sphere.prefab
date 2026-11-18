@@ -155,6 +155,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Projectile
   speed: 30
   lifetime: 2
+  damage: 1
   hitLayers:
     serializedVersion: 2
-    m_Bits: 64
+    m_Bits: 72
