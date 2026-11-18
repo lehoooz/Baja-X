@@ -73,4 +73,14 @@ public class Health : MonoBehaviour
         OnHealthChanged?.Invoke(currentHealth, maxHealth);
     }
 
+    /// <summary> Bunuh langsung, abaikan i-frames (dipakai DeathZone / jatuh ke jurang). </summary>
+    public void Kill()
+    {
+        if (IsDead) return;
+        currentHealth = 0;
+        OnHealthChanged?.Invoke(currentHealth, maxHealth);
+        OnDeath?.Invoke();
+    }
+
+
 }
