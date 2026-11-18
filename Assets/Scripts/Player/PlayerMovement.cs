@@ -150,7 +150,7 @@ public class PlayerMovement : MonoBehaviour
     }
 
     // ---------- Knockback ----------
-    public void ApplyKnockback(Vector3 direction, float force, float popUp = 5f)
+    public void ApplyKnockback(Vector3 direction, float force, float popUp = 10f)
     {
         direction.y = 0f;
         knockbackVelocity = direction.normalized * force;

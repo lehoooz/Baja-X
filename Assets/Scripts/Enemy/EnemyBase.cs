@@ -12,7 +12,13 @@ public abstract class EnemyBase : MonoBehaviour
     [SerializeField] private float knockbackForce = 8f;
     [SerializeField] private float knockbackPopUp = 5f;
 
+    [Header("Knockback (saat kena tembak)")]
+    [SerializeField] protected float hitKnockbackForce = 5f;
+    [SerializeField] protected float hitKnockbackDuration = 0.2f;
+
     protected Health health;
+    protected Vector3 knockbackVelocity;
+    protected float knockbackTimer;
 
     protected virtual void Awake()
     {
@@ -44,5 +50,15 @@ public abstract class EnemyBase : MonoBehaviour
             Vector3 dir = collision.transform.position - transform.position;
             pm.ApplyKnockback(dir, knockbackForce, knockbackPopUp);
         }
+    }
+
+    /// <summary> Dorong musuh ke arah tertentu (dipanggil proyektil saat mengenai musuh). </summary>
+    public void ApplyKnockback(Vector3 direction)
+    {
+        direction.y = 0f;
+        if (direction.sqrMagnitude < 0.001f) return;
+        direction.Normalize();
+        knockbackVelocity = direction * hitKnockbackForce;
+        knockbackTimer = hitKnockbackDuration;
     }
 }

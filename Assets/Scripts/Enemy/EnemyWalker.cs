@@ -23,6 +23,14 @@ public class WalkerEnemy : EnemyBase
 
     private void FixedUpdate()
     {
+        // Saat terpental, pakai velocity knockback dan jangan patrol dulu
+        if (knockbackTimer > 0f)
+        {
+            knockbackTimer -= Time.fixedDeltaTime;
+            rb.linearVelocity = new Vector3(knockbackVelocity.x, rb.linearVelocity.y, 0f);
+            return;
+        }
+
         // Jalan
         rb.linearVelocity = new Vector3(direction * speed, rb.linearVelocity.y, 0f);
 
@@ -37,6 +45,8 @@ public class WalkerEnemy : EnemyBase
         if (hitWall || !groundAhead)
             Flip();
     }
+
+
 
     private void Flip()
     {

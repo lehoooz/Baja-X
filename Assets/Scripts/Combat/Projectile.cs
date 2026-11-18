@@ -27,6 +27,15 @@ public class Projectile : MonoBehaviour
         if (health == null) health = other.GetComponentInParent<Health>();
         if (health != null) health.TakeDamage(damage);
 
+        EnemyBase enemy = other.GetComponent<EnemyBase>();
+        if (enemy == null) enemy = other.GetComponentInParent<EnemyBase>();
+        if (enemy != null)
+        {
+            Rigidbody prb = GetComponent<Rigidbody>();
+            Vector3 dir = prb != null ? prb.linearVelocity : Vector3.right;
+            enemy.ApplyKnockback(dir);
+        }
+
         Destroy(gameObject);
     }
 }

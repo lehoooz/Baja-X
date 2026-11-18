@@ -2205,6 +2205,9 @@ MonoBehaviour:
   contactDamage: 1
   knockbackForce: 8
   knockbackPopUp: 5
+  hitKnockbackForce: 5
+  hitKnockbackDuration: 0.2
+  hitKnockbackPopUp: 5
   speed: 5
   wallCheckDistance: 0.5
   edgeCheckDistance: 0.5
