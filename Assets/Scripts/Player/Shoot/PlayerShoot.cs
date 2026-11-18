@@ -8,6 +8,8 @@ public class PlayerShoot : MonoBehaviour
 
     private float fireTimer;
     private PlayerMovement movement;
+    public bool isShooting { get; private set; }
+
 
     private void Awake() => movement = GetComponent<PlayerMovement>();
 
@@ -15,15 +17,20 @@ public class PlayerShoot : MonoBehaviour
     {
         fireTimer -= Time.deltaTime;
 
-        if (movement.isDashing || movement.isGrabbingLedge) return;
+        isShooting = movement.Actions.Player.Attack.IsPressed()
+            && !movement.isDashing
+            && !movement.isGrabbingLedge;
+
+        if (!isShooting) return;
 
         // Action "Attack" sudah ada di Input Actions bawaan (klik kiri mouse)
-        if (movement.Actions.Player.Attack.IsPressed() && fireTimer <= 0f)
+        if (fireTimer <= 0f)
         {
             Shoot();
             fireTimer = fireRate;
         }
     }
+
 
     private void Shoot()
     {
