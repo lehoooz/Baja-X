@@ -50,11 +50,12 @@ public class PlayerAnimation : MonoBehaviour
             return;
         }
 
-        if (movement.isMoving)
+        if (movement.isMoving && !movement.isGrabbingLedge)
         {
             Vector3 lookDirection = new Vector3(move.x, 0f, move.y);
             Quaternion targetRotation = Quaternion.LookRotation(lookDirection);
             transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
         }
+
     }
 }
