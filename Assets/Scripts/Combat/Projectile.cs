@@ -25,6 +25,8 @@ public class Projectile : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
+        if (other.isTrigger) return;
+
         if (((1 << other.gameObject.layer) & hitLayers) == 0) return;
 
         // Cari Health di objek yang kena (atau di parent-nya, kalau collider ada di child)
