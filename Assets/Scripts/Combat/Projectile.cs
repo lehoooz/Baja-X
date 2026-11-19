@@ -8,6 +8,11 @@ public class Projectile : MonoBehaviour
     [SerializeField] private int damage = 1; // damage per kena
     [SerializeField] private LayerMask hitLayers; // layer yang membuat peluru hancur
 
+    [Header("Knockback ke Player")]
+    [SerializeField] private float playerKnockbackForce = 8f;
+    [SerializeField] private float playerKnockbackPopUp = 5f;
+
+
     public int Damage => damage;
 
     public void Launch(Vector3 direction)
@@ -35,6 +40,16 @@ public class Projectile : MonoBehaviour
             Vector3 dir = prb != null ? prb.linearVelocity : Vector3.right;
             enemy.ApplyKnockback(dir);
         }
+
+        PlayerMovement player = other.GetComponent<PlayerMovement>();
+        if (player == null) player = other.GetComponentInParent<PlayerMovement>();
+        if (player != null)
+        {
+            Rigidbody prb = GetComponent<Rigidbody>();
+            Vector3 dir = prb != null ? prb.linearVelocity : Vector3.right;
+            player.ApplyKnockback(dir, playerKnockbackForce, playerKnockbackPopUp);
+        }
+
 
         Destroy(gameObject);
     }
