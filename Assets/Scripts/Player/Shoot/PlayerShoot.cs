@@ -40,5 +40,10 @@ public class PlayerShoot : MonoBehaviour
         Vector3 pos = firePoint != null ? firePoint.position : transform.position + Vector3.up;
         Projectile p = Instantiate(projectilePrefab, pos, Quaternion.LookRotation(shootDir));
         p.Launch(shootDir);
+
+        // Beri tahu semua walker dari mana tembakan berasal (mereka menoleh ke arah pemain)
+        foreach (WalkerEnemy walker in FindObjectsByType<WalkerEnemy>())
+            walker.FaceTowards(transform.position);
     }
+
 }

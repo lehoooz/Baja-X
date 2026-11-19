@@ -11,8 +11,12 @@ public class GameManager : MonoBehaviour
     [SerializeField] private Transform player;
     [SerializeField] private Transform initialSpawnPoint; // boleh kosong, pakai posisi awal pemain
 
+    public Transform Player => player;
+
+
     private Vector3 respawnPoint;
     private Health playerHealth;
+
 
     private void Awake()
     {
