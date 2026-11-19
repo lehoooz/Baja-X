@@ -13,7 +13,6 @@ public class GameManager : MonoBehaviour
 
     public Transform Player => player;
 
-
     private Vector3 respawnPoint;
     private Health playerHealth;
 
