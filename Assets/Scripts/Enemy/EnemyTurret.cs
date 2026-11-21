@@ -25,8 +25,9 @@ public class EnemyTurret : EnemyBase
     [SerializeField] private Transform firePoint;
 
     private Vector2 fireDirection = Vector2.right;
-    private Renderer rend;
-    private Color baseColor;
+    private Renderer[] rends;
+    private Color[] baseColors;
+    private Animator anim;
     private float cooldownTimer;
     private float telegraphTimer;
     private bool isTelegraphing;
@@ -37,6 +38,7 @@ public class EnemyTurret : EnemyBase
         base.Awake();
         GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeAll;
         ApplyDirection();
+        anim = GetComponentInChildren<Animator>();
     }
 
     // Dipanggil Unity setiap kali ada nilai berubah di Inspector.
@@ -83,9 +85,29 @@ public class EnemyTurret : EnemyBase
 
     private void Start()
     {
-        rend = GetComponent<Renderer>();
-        if (rend != null)
-            baseColor = rend.material.color;
+        // Model sekarang jadi child (FBX), jadi cari semua Renderer di bawah root.
+        // GetComponent<Renderer>() lama hanya mencari di root — tidak ketemu
+        // kalau modelnya anak, dan telegraph merah tidak akan muncul.
+        rends = GetComponentsInChildren<Renderer>();
+        baseColors = new Color[rends.Length];
+        for (int i = 0; i < rends.Length; i++)
+            baseColors[i] = rends[i].material.color;
+    }
+
+    /// <summary> Ubah warna semua bagian model (untuk telegraph merah). </summary>
+    private void SetColor(Color c)
+    {
+        if (rends == null) return;
+        foreach (Renderer r in rends)
+            r.material.color = c;
+    }
+
+    /// <summary> Kembalikan warna asli tiap bagian model. </summary>
+    private void RestoreColor()
+    {
+        if (rends == null) return;
+        for (int i = 0; i < rends.Length; i++)
+            rends[i].material.color = baseColors[i];
     }
 
     private void OnTriggerEnter(Collider other)
@@ -102,13 +124,14 @@ public class EnemyTurret : EnemyBase
 
     private void Update()
     {
+        if (anim != null)
+            anim.SetBool("isAlerted", playerInTrigger);
         // Pemain di luar zona trigger: reset, tidak menyerang
         if (!playerInTrigger)
         {
             isTelegraphing = false;
             cooldownTimer = 0f;
-            if (rend != null)
-                rend.material.color = baseColor;
+            RestoreColor();
             return;
         }
 
@@ -120,8 +143,7 @@ public class EnemyTurret : EnemyBase
                 Fire();
                 isTelegraphing = false;
                 cooldownTimer = cooldownTime;
-                if (rend != null)
-                    rend.material.color = baseColor;
+                RestoreColor();
             }
         }
         else
@@ -131,8 +153,7 @@ public class EnemyTurret : EnemyBase
             {
                 isTelegraphing = true;
                 telegraphTimer = telegraphTime;
-                if (rend != null)
-                    rend.material.color = Color.red;
+                SetColor(Color.red);
             }
         }
     }
@@ -142,6 +163,8 @@ public class EnemyTurret : EnemyBase
         if (projectilePrefab == null || firePoint == null)
             return;
 
+        if (anim != null)
+            anim.SetTrigger("Shoot");
         GameObject bullet = Instantiate(projectilePrefab, firePoint.position, Quaternion.identity);
         Projectile p = bullet.GetComponent<Projectile>();
         if (p == null)
