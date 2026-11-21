@@ -36,6 +36,7 @@ public class PlayerDash : MonoBehaviour
         // Fase 1: Mulai & kunci status
         canDash = false;
         isDashing = true;
+        movement.ClearKnockback();
         health.GrantInvincibility(dashDistance / dashSpeed);
         wall.ClearAll();
         movement.WallJumpLockCounter = 0f;

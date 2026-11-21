@@ -152,6 +152,9 @@ public class PlayerMovement : MonoBehaviour
     // ---------- Knockback ----------
     public void ApplyKnockback(Vector3 direction, float force, float popUp = 10f)
     {
+        // Dash = menghindar: knockback tidak boleh mengganggu dash.
+        if (isDashing) return;
+
         // Batalkan hanging / wall slide dulu, kalau tidak FixedUpdate akan
         // return terus dan gravitasi tidak jalan (jadinya terbang terus)
         wall.ReleaseLedge();
@@ -165,6 +168,14 @@ public class PlayerMovement : MonoBehaviour
         Vector3 v = Rb.linearVelocity;
         v.y = popUp;
         Rb.linearVelocity = v;
+    }
+
+    /// <summary> Batalkan knockback yang sedang berjalan (dipakai saat dash mulai,
+    /// supaya knockback dari sebelum dash tidak menimpa kecepatan dash). </summary>
+    public void ClearKnockback()
+    {
+        knockbackTimer = 0f;
+        knockbackVelocity = Vector3.zero;
     }
 
 
