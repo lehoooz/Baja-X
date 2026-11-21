@@ -86,9 +86,6 @@ public class WalkerEnemy : EnemyBase
 
         if (hitWall || !groundAhead)
             Flip();
-
-        if (hitWall || !groundAhead)
-            Flip();
     }
 
     private void Flip()
