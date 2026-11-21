@@ -94,7 +94,6 @@ public class FlyerEnemy : EnemyBase
         {
             state = State.Telegraph;
             stateTimer = telegraphTime;
-            diveTarget = player.position;
             rb.linearVelocity = Vector3.zero;
         }
     }
@@ -117,6 +116,10 @@ public class FlyerEnemy : EnemyBase
         stateTimer -= Time.fixedDeltaTime;
         if (stateTimer <= 0f)
         {
+            // Tangkap posisi pemain TERKINI saat ancang-ancang selesai,
+            // bukan posisi 0.6 detik lalu.
+            if (player != null)
+                diveTarget = player.position;
             state = State.Dive;
             stateTimer = maxDiveTime;
             if (anim != null)
