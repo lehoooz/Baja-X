@@ -64,7 +64,7 @@ public class FlyerEnemy : EnemyBase
     {
 
         if (anim != null)
-            anim.SetBool("isAlerted", state == State.Telegraph);
+            anim.SetBool("isAlerted", state == State.Telegraph || state == State.Dive);
         // Saat terpental, pakai velocity knockback dan jangan lakukan yang lain
         if (knockbackTimer > 0f)
         {
@@ -134,7 +134,7 @@ public class FlyerEnemy : EnemyBase
             // Tangkap posisi pemain TERKINI saat ancang-ancang selesai,
             // bukan posisi 0.6 detik lalu.
             if (player != null)
-                diveTarget = player.position;
+                diveTarget = player.position + Vector3.up * 1.3f;
             state = State.Dive;
             stateTimer = maxDiveTime;
             if (anim != null)

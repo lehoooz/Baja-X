@@ -10,7 +10,7 @@ public class WalkerEnemy : EnemyBase
     [Header("Gerak")]
     [SerializeField] private float speed = 2f;
     [SerializeField] private float wallCheckDistance = 0.5f;
-    [SerializeField] private float edgeCheckDistance = 0.5f;
+    //[SerializeField] private float edgeCheckDistance = 0.5f;
     [SerializeField] private LayerMask groundLayer;
 
     [Header("Charge (kejar pemain)")]

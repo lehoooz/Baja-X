@@ -32,6 +32,8 @@ public class EnemyTurret : EnemyBase
     private float telegraphTimer;
     private bool isTelegraphing;
     private bool playerInTrigger;
+    private Transform model;    // turret-rigged (objek Animator)
+    private float modelYaw = -90f; // Y rotasi target model: +90 Kanan, -90 Kiri
 
     protected override void Awake()
     {
@@ -81,6 +83,17 @@ public class EnemyTurret : EnemyBase
             }
         }
         firePoint.localPosition = new Vector3(sign * 0.6f, 0.2f, 0f);
+
+        // Putar model menghadap arah tembak (otomatis saat ganti Arah di Inspector)
+        float yaw = direction == TurretDirection.Kanan ? 90f : -90f;
+        modelYaw = yaw;
+        Animator m = GetComponentInChildren<Animator>();
+        if (m != null)
+        {
+            model = m.transform;
+            Vector3 e = model.localEulerAngles;
+            model.localEulerAngles = new Vector3(e.x, yaw, e.z);
+        }
     }
 
     private void Start()
@@ -173,6 +186,16 @@ public class EnemyTurret : EnemyBase
         // Tembak lurus satu arah (tidak mengejar pemain)
         Vector3 dir = new Vector3(fireDirection.x, fireDirection.y, 0f);
         p.Launch(dir.normalized);
+    }
+    private void LateUpdate()
+    {
+        // Animator menimpa rotasi model jadi konstan tiap frame (kurva di FBX).
+        // Kembalikan Y ke arah tembak supaya model tetap menghadap direction yang dipilih.
+        if (model != null)
+        {
+            Vector3 e = model.localEulerAngles;
+            model.localEulerAngles = new Vector3(e.x, modelYaw, e.z);
+        }
     }
 
     private void OnDrawGizmosSelected()
