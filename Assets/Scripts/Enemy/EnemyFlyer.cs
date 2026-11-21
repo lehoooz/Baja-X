@@ -38,12 +38,16 @@ public class FlyerEnemy : EnemyBase
     private Vector3 diveTarget;
     private float stateTimer;
     private Animator anim;
+    private Transform modelRoot; // flyer-rigged (objek Animator)
+    private Vector3 baseScale;   // Scale dari scene, disimpan sebelum Animator menimpa
 
     protected override void Awake()
     {
         base.Awake();
         rb = GetComponent<Rigidbody>();
         anim = GetComponentInChildren<Animator>();
+        modelRoot = anim.transform;
+        baseScale = modelRoot.localScale; // Simpan scale scene (mis. 69.5)
     }
 
     private void Start()
@@ -76,6 +80,16 @@ public class FlyerEnemy : EnemyBase
             case State.Dive: DiveUpdate(); break;
             case State.Return: ReturnUpdate(); break;
         }
+    }
+
+    private void LateUpdate()
+    {
+        // Animator menimpa scale flyer-rigged jadi 100 tiap frame (kurva Scale di FBX).
+        // Kembalikan ke scale scene supaya ukuran di Play sama dengan di scene.
+        // Rotasi dibiarkan: Animator set (-90, 0, 0) = orientasi dasar yang benar;
+        // arah hadap diatur Flip() di root.
+        if (modelRoot != null)
+            modelRoot.localScale = baseScale;
     }
 
     private void PatrolUpdate()
