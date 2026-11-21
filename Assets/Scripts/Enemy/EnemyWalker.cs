@@ -21,17 +21,20 @@ public class WalkerEnemy : EnemyBase
     private Rigidbody rb;
     private int direction = 1; // 1 = kanan, -1 = kiri
     private Transform player;
+    private Animator anim;
 
     protected override void Awake()
     {
         base.Awake();
         rb = GetComponent<Rigidbody>();
+        anim = GetComponentInChildren<Animator>();
     }
 
     private void Start()
     {
         if (GameManager.Instance != null)
             player = GameManager.Instance.Player;
+
     }
 
     private void FixedUpdate()
@@ -46,6 +49,7 @@ public class WalkerEnemy : EnemyBase
 
         // Deteksi pemain di depan (seperti melihat)
         float currentSpeed = speed;
+        bool isCharging = false;
         if (player != null)
         {
             Vector3 toPlayer = player.position - transform.position;
@@ -53,8 +57,15 @@ public class WalkerEnemy : EnemyBase
             bool playerInRange = Mathf.Abs(toPlayer.x) <= detectionRange;
             bool playerSameHeight = Mathf.Abs(toPlayer.y) <= detectionHeight;
             if (playerInFront && playerInRange && playerSameHeight)
+            {
                 currentSpeed = chargeSpeed;
+                isCharging = true;
+            }
         }
+
+        // Update animasi: FoundEnemies saat charge, Walk saat patrol
+        if (anim != null)
+            anim.SetBool("isAlerted", isCharging);
 
         // Jalan
         rb.linearVelocity = new Vector3(direction * currentSpeed, rb.linearVelocity.y, 0f);
