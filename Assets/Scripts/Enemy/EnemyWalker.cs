@@ -75,7 +75,7 @@ public class WalkerEnemy : EnemyBase
         bool hitWall = Physics.Raycast(wallOrigin, new Vector3(direction, 0f, 0f), wallCheckDistance, groundLayer);
 
         // Cek tepi di depan (apakah masih ada tanah di bawah depan)
-        Vector3 edgeOrigin = transform.position + new Vector3(direction * edgeCheckDistance, 0f, 0f);
+        Vector3 edgeOrigin = transform.position + new Vector3(direction * edgeCheckDistance, 0.5f, 0f);
         bool groundAhead = Physics.Raycast(edgeOrigin, Vector3.down, 1.5f, groundLayer);
 
         if (hitWall || !groundAhead)
