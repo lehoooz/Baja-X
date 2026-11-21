@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 4758972250118202272}
   - component: {fileID: 1650646769167215797}
   - component: {fileID: 3308093102862639768}
+  - component: {fileID: 3031086169862361526}
   m_Layer: 6
   m_Name: walker
   m_TagString: Untagged
@@ -82,8 +83,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 3.43, y: 2, z: 1}
-  m_Center: {x: 0, y: 1, z: 0}
+  m_Size: {x: 1.4295453, y: 2, z: 3.3693845}
+  m_Center: {x: 0.009105802, y: 1, z: -0.11348176}
 --- !u!114 &1650646769167215797
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -134,6 +135,19 @@ MonoBehaviour:
   detectionRange: 13.6
   detectionHeight: 1.5
   chargeSpeed: 9
+--- !u!114 &3031086169862361526
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8325954312059336102}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d393e1b7374f56e4d902fb88bf76dc91, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::HitFlash
+  flashDuration: 0.1
 --- !u!1001 &7448437177896236738
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -156,19 +170,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: a183fbf27038f7b4eb78c236c7cbff47, type: 3}
       propertyPath: m_LocalRotation.w
-      value: 0.5
+      value: 0.7071068
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: a183fbf27038f7b4eb78c236c7cbff47, type: 3}
       propertyPath: m_LocalRotation.x
-      value: -0.5
+      value: -0.7071068
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: a183fbf27038f7b4eb78c236c7cbff47, type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0.5
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: a183fbf27038f7b4eb78c236c7cbff47, type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0.5
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: a183fbf27038f7b4eb78c236c7cbff47, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -176,7 +190,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: a183fbf27038f7b4eb78c236c7cbff47, type: 3}
       propertyPath: m_LocalEulerAnglesHint.y
-      value: 90
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: a183fbf27038f7b4eb78c236c7cbff47, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z

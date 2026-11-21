@@ -22,12 +22,14 @@ public class WalkerEnemy : EnemyBase
     private int direction = 1; // 1 = kanan, -1 = kiri
     private Transform player;
     private Animator anim;
+    private BoxCollider boxCollider;
 
     protected override void Awake()
     {
         base.Awake();
         rb = GetComponent<Rigidbody>();
         anim = GetComponentInChildren<Animator>();
+        boxCollider = GetComponent<BoxCollider>();
     }
 
     private void Start()
@@ -70,12 +72,16 @@ public class WalkerEnemy : EnemyBase
         // Jalan
         rb.linearVelocity = new Vector3(direction * currentSpeed, rb.linearVelocity.y, 0f);
 
-        // Cek dinding di depan
-        Vector3 wallOrigin = transform.position + new Vector3(direction * 0.4f, 0.5f, 0f);
+        // Setengah lebar collider di sumbu X dunia. bounds.extents.x otomatis
+        // mengikuti rotasi Flip — kalau collider diubah lagi, ray ikut menyesuaikan.
+        float halfWidth = boxCollider != null ? boxCollider.bounds.extents.x : 0.5f;
+
+        // Cek dinding di depan — ray mulai 0.1 di luar muka depan walker
+        Vector3 wallOrigin = transform.position + new Vector3(direction * (halfWidth + 0.1f), 0.5f, 0f);
         bool hitWall = Physics.Raycast(wallOrigin, new Vector3(direction, 0f, 0f), wallCheckDistance, groundLayer);
 
         // Cek tepi di depan (apakah masih ada tanah di bawah depan)
-        Vector3 edgeOrigin = transform.position + new Vector3(direction * edgeCheckDistance, 0f, 0f);
+        Vector3 edgeOrigin = transform.position + new Vector3(direction * (halfWidth + 0.1f), 0.5f, 0f);
         bool groundAhead = Physics.Raycast(edgeOrigin, Vector3.down, 1.5f, groundLayer);
 
         if (hitWall || !groundAhead)
