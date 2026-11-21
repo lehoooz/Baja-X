@@ -82,5 +82,12 @@ public class Health : MonoBehaviour
         OnDeath?.Invoke();
     }
 
+    /// <summary> Beri i-frames sementara (dipakai dash). Tidak memotong i-frames yang sedang berjalan. </summary>
+    public void GrantInvincibility(float duration)
+    {
+        if (duration > invincibilityTimer)
+            invincibilityTimer = duration;
+    }
+
 
 }

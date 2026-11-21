@@ -13,11 +13,13 @@ public class PlayerDash : MonoBehaviour
     private bool canDash = true;
     private PlayerMovement movement;
     private PlayerLedgeWall wall;
+    private Health health;
 
     private void Awake()
     {
         movement = GetComponent<PlayerMovement>();
         wall = GetComponent<PlayerLedgeWall>();
+        health = GetComponent<Health>();
     }
 
     private void Start() => movement.Actions.Player.Dash.performed += Dashing;
@@ -34,6 +36,7 @@ public class PlayerDash : MonoBehaviour
         // Fase 1: Mulai & kunci status
         canDash = false;
         isDashing = true;
+        health.GrantInvincibility(dashDistance / dashSpeed);
         wall.ClearAll();
         movement.WallJumpLockCounter = 0f;
 
