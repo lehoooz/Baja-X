@@ -37,11 +37,13 @@ public class FlyerEnemy : EnemyBase
     private Vector3 homePosition;
     private Vector3 diveTarget;
     private float stateTimer;
+    private Animator anim;
 
     protected override void Awake()
     {
         base.Awake();
         rb = GetComponent<Rigidbody>();
+        anim = GetComponentInChildren<Animator>();
     }
 
     private void Start()
@@ -55,6 +57,9 @@ public class FlyerEnemy : EnemyBase
 
     private void FixedUpdate()
     {
+
+        if (anim != null)
+            anim.SetBool("isAlerted", state == State.Telegraph);
         // Saat terpental, pakai velocity knockback dan jangan lakukan yang lain
         if (knockbackTimer > 0f)
         {
@@ -114,6 +119,8 @@ public class FlyerEnemy : EnemyBase
         {
             state = State.Dive;
             stateTimer = maxDiveTime;
+            if (anim != null)
+                anim.SetTrigger("Attack");
         }
     }
 
