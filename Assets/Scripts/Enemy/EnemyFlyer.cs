@@ -53,6 +53,7 @@ public class FlyerEnemy : EnemyBase
         homePosition = transform.position;
         if (GameManager.Instance != null)
             player = GameManager.Instance.Player;
+        transform.rotation = Quaternion.Euler(0f, direction > 0 ? 90f : -90f, 0f);
     }
 
     private void FixedUpdate()
