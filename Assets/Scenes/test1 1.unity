@@ -3712,7 +3712,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d393e1b7374f56e4d902fb88bf76dc91, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::HitFlash
-  flashMaterial: {fileID: 0}
+  flashMaterial: {fileID: 2100000, guid: 8175e895e9e49ad46adc094a2ffcc8e1, type: 2}
   flashDuration: 0.1
 --- !u!1 &2020015360
 GameObject:

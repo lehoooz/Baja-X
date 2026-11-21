@@ -125,7 +125,7 @@ public class EnemyTurret : EnemyBase
     private void Update()
     {
         if (anim != null)
-            anim.SetBool("isAlerted", playerInTrigger);
+            anim.SetBool("isAlerted", isTelegraphing);
         // Pemain di luar zona trigger: reset, tidak menyerang
         if (!playerInTrigger)
         {
