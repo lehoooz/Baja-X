@@ -390,6 +390,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Turret (2)
       objectReference: {fileID: 0}
+    - target: {fileID: 3740171180700816903, guid: f1a21357bfa8aa34b91516776e956da2, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4888511686882377724, guid: f1a21357bfa8aa34b91516776e956da2, type: 3}
       propertyPath: m_LocalPosition.x
       value: 112.11588
@@ -921,6 +925,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: walker (2)
       objectReference: {fileID: 0}
+    - target: {fileID: 8325954312059336102, guid: 49f1b3ddb9839c147952ea24ad46ebcb, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8436818807548740183, guid: 49f1b3ddb9839c147952ea24ad46ebcb, type: 3}
       propertyPath: m_LocalPosition.x
       value: 166.75381
@@ -977,6 +985,10 @@ PrefabInstance:
     - target: {fileID: 8325954312059336102, guid: 49f1b3ddb9839c147952ea24ad46ebcb, type: 3}
       propertyPath: m_Name
       value: walker (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 8325954312059336102, guid: 49f1b3ddb9839c147952ea24ad46ebcb, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8436818807548740183, guid: 49f1b3ddb9839c147952ea24ad46ebcb, type: 3}
       propertyPath: m_LocalPosition.x
@@ -1101,6 +1113,10 @@ PrefabInstance:
     - target: {fileID: 3740171180700816903, guid: f1a21357bfa8aa34b91516776e956da2, type: 3}
       propertyPath: m_Name
       value: Turret
+      objectReference: {fileID: 0}
+    - target: {fileID: 3740171180700816903, guid: f1a21357bfa8aa34b91516776e956da2, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4888511686882377724, guid: f1a21357bfa8aa34b91516776e956da2, type: 3}
       propertyPath: m_LocalPosition.x
@@ -1323,6 +1339,10 @@ PrefabInstance:
     - target: {fileID: 5960553778411494556, guid: 17933265b25be774bba7451003288ce7, type: 3}
       propertyPath: m_Name
       value: Flyer
+      objectReference: {fileID: 0}
+    - target: {fileID: 5960553778411494556, guid: 17933265b25be774bba7451003288ce7, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8945425545491790053, guid: 17933265b25be774bba7451003288ce7, type: 3}
       propertyPath: m_LocalPosition.x
@@ -2125,6 +2145,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Flyer (3)
       objectReference: {fileID: 0}
+    - target: {fileID: 5960553778411494556, guid: 17933265b25be774bba7451003288ce7, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8945425545491790053, guid: 17933265b25be774bba7451003288ce7, type: 3}
       propertyPath: m_LocalPosition.x
       value: 144.91
@@ -2181,6 +2205,10 @@ PrefabInstance:
     - target: {fileID: 8325954312059336102, guid: 49f1b3ddb9839c147952ea24ad46ebcb, type: 3}
       propertyPath: m_Name
       value: walker
+      objectReference: {fileID: 0}
+    - target: {fileID: 8325954312059336102, guid: 49f1b3ddb9839c147952ea24ad46ebcb, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8436818807548740183, guid: 49f1b3ddb9839c147952ea24ad46ebcb, type: 3}
       propertyPath: m_LocalPosition.x
@@ -2887,6 +2915,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Flyer (1)
       objectReference: {fileID: 0}
+    - target: {fileID: 5960553778411494556, guid: 17933265b25be774bba7451003288ce7, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8945425545491790053, guid: 17933265b25be774bba7451003288ce7, type: 3}
       propertyPath: m_LocalPosition.x
       value: 2.55
@@ -3397,6 +3429,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Flyer (2)
       objectReference: {fileID: 0}
+    - target: {fileID: 5960553778411494556, guid: 17933265b25be774bba7451003288ce7, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8945425545491790053, guid: 17933265b25be774bba7451003288ce7, type: 3}
       propertyPath: m_LocalPosition.x
       value: 51.11
@@ -3646,6 +3682,10 @@ PrefabInstance:
     - target: {fileID: 3740171180700816903, guid: f1a21357bfa8aa34b91516776e956da2, type: 3}
       propertyPath: m_Name
       value: Turret (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 3740171180700816903, guid: f1a21357bfa8aa34b91516776e956da2, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4888511686882377724, guid: f1a21357bfa8aa34b91516776e956da2, type: 3}
       propertyPath: m_LocalPosition.x
@@ -4482,7 +4522,6 @@ MonoBehaviour:
   projectilePrefab: {fileID: 3645921934173157154, guid: 9792c7b3980a66743accb9717ee0c3b5, type: 3}
   firePoint: {fileID: 588021971}
   fireRate: 0.25
-  muzzleFlash: {fileID: 0}
 --- !u!114 &5866666021216850660
 MonoBehaviour:
   m_ObjectHideFlags: 0
