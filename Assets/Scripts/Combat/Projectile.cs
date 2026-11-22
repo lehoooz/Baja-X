@@ -12,8 +12,15 @@ public class Projectile : MonoBehaviour
     [SerializeField] private float playerKnockbackForce = 8f;
     [SerializeField] private float playerKnockbackPopUp = 5f;
 
+    [Header("Efek")]
+    [SerializeField] private TrailRenderer trail; // trail di prefab yang sama
 
     public int Damage => damage;
+
+    private void Awake()
+    {
+        if (trail == null) trail = GetComponent<TrailRenderer>();
+    }
 
     public void Launch(Vector3 direction)
     {
@@ -52,7 +59,20 @@ public class Projectile : MonoBehaviour
             player.ApplyKnockback(dir, playerKnockbackForce, playerKnockbackPopUp);
         }
 
+        // Matikan bola + collider, biarkan trail memudar dulu baru hancur
+        MeshRenderer mesh = GetComponentInChildren<MeshRenderer>();
+        if (mesh != null) mesh.enabled = false;
+        Collider col = GetComponent<Collider>();
+        if (col != null) col.enabled = false;
 
-        Destroy(gameObject);
+        if (trail != null)
+        {
+            trail.emitting = false;
+            Destroy(gameObject, trail.time);
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
     }
 }
