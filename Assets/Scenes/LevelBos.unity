@@ -287,7 +287,7 @@ Transform:
   m_GameObject: {fileID: 227600604}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1.8, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -687,7 +687,7 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 919132148780339743}
   serializedVersion: 5
-  m_Mass: 10
+  m_Mass: 1
   m_LinearDamping: 0
   m_AngularDamping: 0.05
   m_CenterOfMass: {x: 0, y: 0, z: 0}
@@ -1144,8 +1144,11 @@ MonoBehaviour:
   attackInterval: 1
   hitKnockbackForce: 5
   hitKnockbackDuration: 0.2
-  activationRange: 12
-  idleTime: 1.2
+  walkSpeed: 3
+  approachMinTime: 0.5
+  slamAttackRange: 3.5
+  chargeAttackRange: 9
+  shootAttackRange: 15
   telegraphTime: 0.5
   telegraphColor: {r: 1, g: 0, b: 0, a: 1}
   chargeSpeed: 14
@@ -1214,7 +1217,7 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1297033578}
   serializedVersion: 5
-  m_Mass: 1
+  m_Mass: 5
   m_LinearDamping: 0
   m_AngularDamping: 0.05
   m_CenterOfMass: {x: 0, y: 0, z: 0}

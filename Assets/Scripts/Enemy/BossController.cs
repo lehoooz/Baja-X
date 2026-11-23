@@ -3,12 +3,17 @@ using UnityEngine;
 [RequireComponent(typeof(Rigidbody))]
 public class BossController : EnemyBase
 {
-    private enum State { Idle, Telegraph, Charge, Slam, Shoot, Recovery }
-    private State state = State.Idle;
+    private enum State { Approach, Telegraph, Charge, Slam, Shoot, Recovery }
+    private State state = State.Approach;
 
-    [Header("Aktivasi")]
-    [SerializeField] private float activationRange = 12f; // boss mulai aktif kalau pemain sedekat ini
-    [SerializeField] private float idleTime = 1.2f; // jeda antar serangan
+    [Header("Mendekati Player")]
+    [SerializeField] private float walkSpeed = 3f; // kecepatan jalan mendekati player
+    [SerializeField] private float approachMinTime = 0.5f; // jalan dulu segini sebelum boleh menyerang
+
+    [Header("Jarak Serangan")]
+    [SerializeField] private float slamAttackRange = 3.5f; // dekat -> slam
+    [SerializeField] private float chargeAttackRange = 9f; // menengah -> charge
+    [SerializeField] private float shootAttackRange = 15f; // jauh -> tembak
 
     [Header("Telegraph")]
     [SerializeField] private float telegraphTime = 0.5f;
@@ -16,7 +21,7 @@ public class BossController : EnemyBase
 
     [Header("Charge")]
     [SerializeField] private float chargeSpeed = 14f;
-    [SerializeField] private float chargeTime = 0.6f;
+    [SerializeField] private float chargeTime = 2.5f; // batas aman, charge berhenti kalau kena tembok
     [SerializeField] private LayerMask groundLayer;
 
     [Header("Ground Slam")]
@@ -41,7 +46,8 @@ public class BossController : EnemyBase
     private Vector3 baseScale;
 
     private float stateTimer;
-    private State nextAttack = State.Idle;
+    private float approachTimer;
+    private State nextAttack = State.Approach;
     private Vector2 chargeDir = Vector2.right;
     private bool isActive;
 
@@ -66,12 +72,17 @@ public class BossController : EnemyBase
     {
         if (GameManager.Instance != null && GameManager.Instance.Player != null)
             player = GameManager.Instance.Player;
-        stateTimer = idleTime;
+
+        // boss langsung aktif dari awal scene, tidak menunggu player dekat
+        isActive = true;
+        state = State.Approach;
+        approachTimer = approachMinTime;
+        Debug.Log("[Boss] Aktif dari awal scene.");
     }
 
     private void FixedUpdate()
     {
-        if (player == null) return;
+        if (player == null || !isActive) return;
 
         // Boss berat: peluru tidak mendorongnya, tapi timer knockback tetap dihabiskan
         if (knockbackTimer > 0f)
@@ -80,24 +91,11 @@ public class BossController : EnemyBase
             return;
         }
 
-        float dist = Mathf.Abs(player.position.x - transform.position.x);
-
-        if (!isActive)
-        {
-            if (dist <= activationRange)
-            {
-                isActive = true;
-                state = State.Idle;
-                stateTimer = idleTime;
-            }
-            return;
-        }
-
         stateTimer -= Time.fixedDeltaTime;
 
         switch (state)
         {
-            case State.Idle: IdleUpdate(); break;
+            case State.Approach: ApproachUpdate(); break;
             case State.Telegraph: TelegraphUpdate(); break;
             case State.Charge: ChargeUpdate(); break;
             case State.Slam: SlamUpdate(); break;
@@ -106,15 +104,36 @@ public class BossController : EnemyBase
         }
     }
 
-    private void IdleUpdate()
+    private void ApproachUpdate()
     {
         FacePlayer();
-        if (stateTimer > 0f) return;
 
-        // serangan acak: charge / slam / tembak
-        State[] attacks = { State.Charge, State.Slam, State.Shoot };
-        nextAttack = attacks[Random.Range(0, attacks.Length)];
+        // jalan mendekati player
+        float dir = Mathf.Sign(player.position.x - transform.position.x);
+        if (dir != 0f)
+            rb.linearVelocity = new Vector3(dir * walkSpeed, rb.linearVelocity.y, 0f);
+        else
+            rb.linearVelocity = new Vector3(0f, rb.linearVelocity.y, 0f);
 
+        // jalan dulu sebentar sebelum boleh menyerang, biar boss kelihatan mendekat
+        if (approachTimer > 0f)
+        {
+            approachTimer -= Time.fixedDeltaTime;
+            return;
+        }
+
+        // serangan tergantung jarak player
+        float dist = Mathf.Abs(player.position.x - transform.position.x);
+        if (dist <= slamAttackRange)
+            nextAttack = State.Slam;
+        else if (dist <= chargeAttackRange)
+            nextAttack = State.Charge;
+        else if (dist <= shootAttackRange)
+            nextAttack = State.Shoot;
+        else
+            return; // terlalu jauh, terus jalan mendekat
+
+        Debug.Log("[Boss] Telegraph -> serangan: " + nextAttack + " (jarak: " + dist.ToString("F1") + ")");
         state = State.Telegraph;
         stateTimer = telegraphTime;
         SetColor(telegraphColor);
@@ -130,11 +149,13 @@ public class BossController : EnemyBase
         {
             case State.Charge:
                 chargeDir = new Vector2(Mathf.Sign(player.position.x - transform.position.x), 0f);
+                Debug.Log("[Boss] Charge! Arah: " + chargeDir.x);
                 state = State.Charge;
                 stateTimer = chargeTime;
                 break;
             case State.Slam:
                 SlamDamage();
+                Debug.Log("[Boss] Slam! Radius: " + slamRadius);
                 if (model != transform)
                     model.localScale = new Vector3(baseScale.x, baseScale.y * 0.7f, baseScale.z);
                 state = State.Slam;
@@ -142,6 +163,7 @@ public class BossController : EnemyBase
                 break;
             case State.Shoot:
                 ShootProjectile();
+                Debug.Log("[Boss] Shoot!");
                 state = State.Shoot;
                 stateTimer = 0.1f;
                 break;
@@ -155,15 +177,22 @@ public class BossController : EnemyBase
     {
         rb.linearVelocity = new Vector3(chargeDir.x * chargeSpeed, rb.linearVelocity.y, 0f);
 
+        // charge berhenti kalau kena tembok (ujung arena)
         Vector3 origin = transform.position + Vector3.up * 1.6f
             + new Vector3(chargeDir.x * 0.7f, 0f, 0f);
         if (Physics.Raycast(origin, new Vector3(chargeDir.x, 0f, 0f), 0.5f, groundLayer))
         {
+            Debug.Log("[Boss] Charge nabrak tembok, berhenti.");
             EndAttack();
             return;
         }
 
-        if (stateTimer <= 0f) EndAttack();
+        // batas aman saja, biar tidak charge selamanya kalau tidak ada tembok
+        if (stateTimer <= 0f)
+        {
+            Debug.Log("[Boss] Charge selesai (batas waktu), berhenti.");
+            EndAttack();
+        }
     }
 
     private void SlamUpdate()
@@ -184,13 +213,15 @@ public class BossController : EnemyBase
     {
         if (stateTimer <= 0f)
         {
-            state = State.Idle;
-            stateTimer = idleTime;
+            Debug.Log("[Boss] Approach");
+            state = State.Approach;
+            approachTimer = approachMinTime;
         }
     }
 
     private void EndAttack()
     {
+        Debug.Log("[Boss] Recovery");
         rb.linearVelocity = new Vector3(0f, rb.linearVelocity.y, 0f);
         state = State.Recovery;
         stateTimer = recoveryTime;
