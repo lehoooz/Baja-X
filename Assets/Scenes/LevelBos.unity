@@ -1130,7 +1130,7 @@ MonoBehaviour:
   attackInterval: 1
   hitKnockbackForce: 5
   hitKnockbackDuration: 0.2
-  walkSpeed: 3
+  walkSpeed: 10
   approachMinTime: 0.5
   slamAttackRange: 3.5
   attackRange: 15
@@ -2207,6 +2207,7 @@ MonoBehaviour:
   dashSpeed: 50
   dashDistance: 7
   dashCooldown: 1
+  dashDamage: 1
 --- !u!114 &5866666021216850658
 MonoBehaviour:
   m_ObjectHideFlags: 0
