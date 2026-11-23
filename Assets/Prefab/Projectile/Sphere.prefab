@@ -155,14 +155,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Projectile
   speed: 50
-  lifetime: 2
+  lifetime: 0.5
   damage: 1
   hitLayers:
     serializedVersion: 2
     m_Bits: 72
   playerKnockbackForce: 8
   playerKnockbackPopUp: 5
-  impactParticles: {fileID: 0}
   trail: {fileID: 0}
 --- !u!96 &-5123185250795495202
 TrailRenderer:

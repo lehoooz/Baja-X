@@ -2941,7 +2941,7 @@ Transform:
   m_GameObject: {fileID: 742200346}
   serializedVersion: 2
   m_LocalRotation: {x: -0.037509616, y: 0.018224828, z: 0.0006842017, w: 0.99912983}
-  m_LocalPosition: {x: 16.98556, y: 7.858673, z: -13.711589}
+  m_LocalPosition: {x: 16.983227, y: 7.858673, z: -13.711504}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -5261,7 +5261,7 @@ Transform:
   m_GameObject: {fileID: 1371377148}
   serializedVersion: 2
   m_LocalRotation: {x: -0.037509616, y: 0.018224828, z: 0.0006842017, w: 0.99912983}
-  m_LocalPosition: {x: 16.98556, y: 7.858673, z: -13.711589}
+  m_LocalPosition: {x: 16.983227, y: 7.858673, z: -13.711504}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -8726,6 +8726,8 @@ MonoBehaviour:
   projectilePrefab: {fileID: 3645921934173157154, guid: 9792c7b3980a66743accb9717ee0c3b5, type: 3}
   firePoint: {fileID: 588021971}
   fireRate: 0.25
+  burstWindow: 0.3
+  reloadTime: 1
 --- !u!114 &5866666021216850660
 MonoBehaviour:
   m_ObjectHideFlags: 0
