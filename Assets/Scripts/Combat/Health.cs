@@ -18,6 +18,7 @@ public class Health : MonoBehaviour
     public int MaxHealth => maxHealth;
     public int CurrentHealth => currentHealth;
     public bool IsDead => currentHealth <= 0;
+    public float InvincibilityTime => invincibilityTime;
 
     /// <summary> dipanggil tiap HP berubah (current, max) — untuk HUD nanti </summary>
     public UnityEvent<int, int> OnHealthChanged;

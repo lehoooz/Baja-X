@@ -12,8 +12,7 @@ public class BossController : EnemyBase
 
     [Header("Jarak Serangan")]
     [SerializeField] private float slamAttackRange = 3.5f; // dekat -> slam
-    [SerializeField] private float chargeAttackRange = 9f; // menengah -> charge
-    [SerializeField] private float shootAttackRange = 15f; // jauh -> tembak
+    [SerializeField] private float attackRange = 15f; // dalam jarak ini boss menyerang (charge / shot acak)
 
     [Header("Telegraph")]
     [SerializeField] private float telegraphTime = 0.5f;
@@ -21,7 +20,7 @@ public class BossController : EnemyBase
 
     [Header("Charge")]
     [SerializeField] private float chargeSpeed = 14f;
-    [SerializeField] private float chargeTime = 2.5f; // batas aman, charge berhenti kalau kena tembok
+    [SerializeField] private float chargeTime = 5f; // batas aman saja, charge berhenti kalau kena tembok / ujung platform
     [SerializeField] private LayerMask groundLayer;
 
     [Header("Ground Slam")]
@@ -50,6 +49,10 @@ public class BossController : EnemyBase
     private State nextAttack = State.Approach;
     private Vector2 chargeDir = Vector2.right;
     private bool isActive;
+
+    // anti pengulangan: serangan yang sama tidak boleh lebih dari 2x berturut-turut
+    private State lastAttack = State.Approach;
+    private int sameAttackCount = 0;
 
     protected override void Awake()
     {
@@ -84,11 +87,11 @@ public class BossController : EnemyBase
     {
         if (player == null || !isActive) return;
 
-        // Boss berat: peluru tidak mendorongnya, tapi timer knockback tetap dihabiskan
+        // Boss berat: peluru tidak mendorongnya, jadi timer knockback
+        // cuma dihabiskan saja — state machine tetap jalan walau ditembak
         if (knockbackTimer > 0f)
         {
             knockbackTimer -= Time.fixedDeltaTime;
-            return;
         }
 
         stateTimer -= Time.fixedDeltaTime;
@@ -122,16 +125,43 @@ public class BossController : EnemyBase
             return;
         }
 
-        // serangan tergantung jarak player
         float dist = Mathf.Abs(player.position.x - transform.position.x);
+
+        // dekat -> slam (tetap berdasarkan jarak, bukan acak)
         if (dist <= slamAttackRange)
+        {
             nextAttack = State.Slam;
-        else if (dist <= chargeAttackRange)
-            nextAttack = State.Charge;
-        else if (dist <= shootAttackRange)
-            nextAttack = State.Shoot;
+            lastAttack = State.Slam;
+            sameAttackCount = 0;
+        }
+        // dalam jangkauan serang -> charge / shot dipilih ACAK
+        else if (dist <= attackRange)
+        {
+            State[] attacks = { State.Charge, State.Shoot };
+            State pick = attacks[Random.Range(0, attacks.Length)];
+
+            // serangan yang sama tidak boleh lebih dari 2x berturut-turut
+            if (pick == lastAttack)
+            {
+                sameAttackCount++;
+                if (sameAttackCount > 2)
+                {
+                    pick = (pick == State.Charge) ? State.Shoot : State.Charge;
+                    sameAttackCount = 1;
+                }
+            }
+            else
+            {
+                sameAttackCount = 1;
+            }
+
+            lastAttack = pick;
+            nextAttack = pick;
+        }
         else
+        {
             return; // terlalu jauh, terus jalan mendekat
+        }
 
         Debug.Log("[Boss] Telegraph -> serangan: " + nextAttack + " (jarak: " + dist.ToString("F1") + ")");
         state = State.Telegraph;
@@ -177,17 +207,28 @@ public class BossController : EnemyBase
     {
         rb.linearVelocity = new Vector3(chargeDir.x * chargeSpeed, rb.linearVelocity.y, 0f);
 
-        // charge berhenti kalau kena tembok (ujung arena)
-        Vector3 origin = transform.position + Vector3.up * 1.6f
+        // berhenti kalau nabrak tembok
+        Vector3 wallOrigin = transform.position + Vector3.up * 1.6f
             + new Vector3(chargeDir.x * 0.7f, 0f, 0f);
-        if (Physics.Raycast(origin, new Vector3(chargeDir.x, 0f, 0f), 0.5f, groundLayer))
+        if (Physics.Raycast(wallOrigin, new Vector3(chargeDir.x, 0f, 0f), 1f, groundLayer))
         {
             Debug.Log("[Boss] Charge nabrak tembok, berhenti.");
             EndAttack();
             return;
         }
 
-        // batas aman saja, biar tidak charge selamanya kalau tidak ada tembok
+        // berhenti kalau sudah di ujung platform (tidak ada tanah di depan)
+        // biar charge sampai ujung, bukan jatuh dari platform
+        Vector3 edgeOrigin = transform.position + new Vector3(chargeDir.x * 0.8f, 0.2f, 0f);
+        bool groundAhead = Physics.Raycast(edgeOrigin, Vector3.down, 2.5f, groundLayer);
+        if (!groundAhead)
+        {
+            Debug.Log("[Boss] Charge sampai ujung platform, berhenti.");
+            EndAttack();
+            return;
+        }
+
+        // batas aman saja (5 detik), biar tidak charge selamanya kalau kedua cek di atas lolos
         if (stateTimer <= 0f)
         {
             Debug.Log("[Boss] Charge selesai (batas waktu), berhenti.");
