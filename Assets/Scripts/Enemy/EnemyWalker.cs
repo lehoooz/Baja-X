@@ -91,9 +91,21 @@ public class WalkerEnemy : EnemyBase
                 hitWall = true;
         }
 
-        // Cek tepi di depan (apakah masih ada tanah di bawah depan)
-        Vector3 edgeOrigin = transform.position + new Vector3(direction * (halfWidth + 0.1f), 0.5f, 0f);
-        bool groundAhead = Physics.Raycast(edgeOrigin, Vector3.down, 1.5f, groundLayer);
+        // Cek tepi di depan — ray dari ATAS (Y+2.5) ke bawah, panjang 5.
+        // Ray yang lama (dari Y+0.5 ke bawah 1.5) tidak bisa mendeteksi lereng:
+        // di tanjakan, tanah di depan LEBIH TINGGI dari asal ray sehingga ray meleset;
+        // di turunan curam, tanah di depan LEBIH RENDAH dari jangkauan ray sehingga ray meleset.
+        // Keduanya bikin walker mengira ada jurang lalu flip bolak-balik di lereng.
+        // Ray baru ini mendeteksi tanah naik/turun, dan flip hanya kalau tanahnya
+        // jauh di bawah (jurang, jatuh > 2 unit) atau tidak ada tanah sama sekali.
+        Vector3 edgeOrigin = transform.position + new Vector3(direction * (halfWidth + 0.1f), 2.5f, 0f);
+        bool groundAhead = false;
+        if (Physics.Raycast(edgeOrigin, Vector3.down, out RaycastHit edgeHit, 5f, groundLayer))
+        {
+            float dropFromFeet = transform.position.y - edgeHit.point.y;
+            if (dropFromFeet <= 2f)
+                groundAhead = true;
+        }
 
         if (hitWall || hitEnemy || !groundAhead)
             Flip();
