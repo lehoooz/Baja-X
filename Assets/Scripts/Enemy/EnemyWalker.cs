@@ -1,7 +1,7 @@
 using UnityEngine;
 
 /// <summary>
-/// Musuh Walker: jalan lurus, berbalik arah di tepi platform / dinding.
+/// Musuh Walker: jalan lurus, berbalik arah di tepi platform / dinding / musuh lain.
 /// Kalau pemain terlihat di depannya, dia charge dengan cepat.
 /// </summary>
 [RequireComponent(typeof(Rigidbody))]
@@ -12,6 +12,7 @@ public class WalkerEnemy : EnemyBase
     [SerializeField] private float wallCheckDistance = 0.5f;
     //[SerializeField] private float edgeCheckDistance = 0.5f;
     [SerializeField] private LayerMask groundLayer;
+    [SerializeField] private LayerMask enemyLayer = 1 << 6; // layer Enemy — untuk flip kalau ada musuh di depan
 
     [Header("Charge (kejar pemain)")]
     [SerializeField] private float detectionRange = 6f;
@@ -76,15 +77,25 @@ public class WalkerEnemy : EnemyBase
         // mengikuti rotasi Flip — kalau collider diubah lagi, ray ikut menyesuaikan.
         float halfWidth = boxCollider != null ? boxCollider.bounds.extents.x : 0.5f;
 
-        // Cek dinding di depan — ray mulai 0.1 di luar muka depan walker
+        // Cek musuh di depan — kalau ada musuh lain, berbalik arah (jangan mendorongnya)
         Vector3 wallOrigin = transform.position + new Vector3(direction * (halfWidth + 0.1f), 0.5f, 0f);
-        bool hitWall = Physics.Raycast(wallOrigin, new Vector3(direction, 0f, 0f), wallCheckDistance, groundLayer);
+        bool hitEnemy = Physics.Raycast(wallOrigin, new Vector3(direction, 0f, 0f), wallCheckDistance, enemyLayer);
+
+        // Cek dinding di depan — ray mulai 0.1 di luar muka depan walker.
+        // Hanya flip kalau yang kena itu dinding tegak, BUKAN lantai miring.
+        // (Dinding tegak normalnya mendatar; lantai miring normalnya menghadap ke atas.)
+        bool hitWall = false;
+        if (Physics.Raycast(wallOrigin, new Vector3(direction, 0f, 0f), out RaycastHit wallHit, wallCheckDistance, groundLayer))
+        {
+            if (Mathf.Abs(wallHit.normal.y) < 0.5f)
+                hitWall = true;
+        }
 
         // Cek tepi di depan (apakah masih ada tanah di bawah depan)
         Vector3 edgeOrigin = transform.position + new Vector3(direction * (halfWidth + 0.1f), 0.5f, 0f);
         bool groundAhead = Physics.Raycast(edgeOrigin, Vector3.down, 1.5f, groundLayer);
 
-        if (hitWall || !groundAhead)
+        if (hitWall || hitEnemy || !groundAhead)
             Flip();
     }
 

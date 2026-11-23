@@ -13,6 +13,8 @@ public class FlyerEnemy : EnemyBase
     [SerializeField] private float bobAmplitude = 0.5f;
     [SerializeField] private float bobFrequency = 2f;
     [SerializeField] private float patrolRange = 4f;
+    [SerializeField] private float enemyCheckDistance = 1f; // jarak cek musuh di depan
+    [SerializeField] private LayerMask enemyLayer = 1 << 6; // layer Enemy — untuk flip kalau ada musuh di depan
 
     [Header("Deteksi (kotak di bawah depan)")]
     [SerializeField] private float detectionWidth = 4f;
@@ -40,6 +42,7 @@ public class FlyerEnemy : EnemyBase
     private Animator anim;
     private Transform modelRoot; // flyer-rigged (objek Animator)
     private Vector3 baseScale;   // Scale dari scene, disimpan sebelum Animator menimpa
+    private BoxCollider boxCollider;
 
     protected override void Awake()
     {
@@ -48,6 +51,7 @@ public class FlyerEnemy : EnemyBase
         anim = GetComponentInChildren<Animator>();
         modelRoot = anim.transform;
         baseScale = modelRoot.localScale; // Simpan scale scene (mis. 69.5)
+        boxCollider = GetComponent<BoxCollider>();
     }
 
     private void Start()
@@ -94,11 +98,22 @@ public class FlyerEnemy : EnemyBase
 
     private void PatrolUpdate()
     {
-        // Berbalik di ujung jarak patroli (dari titik spawn)
-        // Hanya flip kalau sedang bergerak menjauhi home (biar tidak flip bolak-balik di ujung)
-        float distFromHome = transform.position.x - homePosition.x;
-        if (Mathf.Abs(distFromHome) >= patrolRange && Mathf.Sign(distFromHome) == direction)
+        // Cek musuh di depan — kalau ada musuh lain, berbalik arah (jangan menabrak/mendorongnya)
+        float halfWidth = boxCollider != null ? boxCollider.bounds.extents.x : 0.5f;
+        Vector3 enemyOrigin = transform.position + new Vector3(direction * (halfWidth + 0.1f), 0f, 0f);
+        bool hitEnemy = Physics.Raycast(enemyOrigin, new Vector3(direction, 0f, 0f), enemyCheckDistance, enemyLayer);
+        if (hitEnemy)
+        {
             Flip();
+        }
+        else
+        {
+            // Berbalik di ujung jarak patroli (dari titik spawn)
+            // Hanya flip kalau sedang bergerak menjauhi home (biar tidak flip bolak-balik di ujung)
+            float distFromHome = transform.position.x - homePosition.x;
+            if (Mathf.Abs(distFromHome) >= patrolRange && Mathf.Sign(distFromHome) == direction)
+                Flip();
+        }
 
         // Terbang naik-turun (sinus)
         float vy = Mathf.Cos(Time.time * bobFrequency) * bobAmplitude * bobFrequency;
