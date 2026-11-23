@@ -41,6 +41,7 @@ public class EnemyTurret : EnemyBase
         GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeAll;
         ApplyDirection();
         anim = GetComponentInChildren<Animator>();
+
     }
 
     // Dipanggil Unity setiap kali ada nilai berubah di Inspector.

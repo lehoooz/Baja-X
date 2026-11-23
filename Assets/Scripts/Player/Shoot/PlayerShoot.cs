@@ -41,12 +41,7 @@ public class PlayerShoot : MonoBehaviour
         Projectile p = Instantiate(projectilePrefab, pos, Quaternion.LookRotation(shootDir));
         p.Launch(shootDir);
 
-        // Beri tahu semua walker dan flyer dari mana tembakan berasal (mereka menoleh ke arah pemain)
-        foreach (WalkerEnemy walker in FindObjectsByType<WalkerEnemy>())
-            walker.FaceTowards(transform.position);
-        foreach (FlyerEnemy flyer in FindObjectsByType<FlyerEnemy>())
-            flyer.FaceTowards(transform.position);
-
+       
     }
 
 }

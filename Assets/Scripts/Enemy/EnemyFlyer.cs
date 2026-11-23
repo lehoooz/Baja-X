@@ -52,6 +52,9 @@ public class FlyerEnemy : EnemyBase
         modelRoot = anim.transform;
         baseScale = modelRoot.localScale; // Simpan scale scene (mis. 69.5)
         boxCollider = GetComponent<BoxCollider>();
+        // Kalau kena tembak, hadap ke arah pemain (bukan karena dengar suara tembakan)
+        if (health != null)
+            health.OnDamaged.AddListener(OnHitByBullet);
     }
 
     private void Start()
@@ -185,12 +188,19 @@ public class FlyerEnemy : EnemyBase
         transform.rotation = Quaternion.Euler(0f, direction > 0 ? 90f : -90f, 0f);
     }
 
-    /// <summary> Hadap ke arah posisi sumber (misal saat mendengar tembakan). </summary>
+    /// <summary> Hadap ke arah posisi sumber (misal saat kena tembak dari pemain). </summary>
     public void FaceTowards(Vector3 sourcePosition)
     {
         int newDir = sourcePosition.x >= transform.position.x ? 1 : -1;
         if (newDir != direction)
             Flip();
+    }
+
+    /// <summary> Dipanggil saat kena damage (misal kena peluru pemain) — berbalik menghadap pemain. </summary>
+    private void OnHitByBullet(int damage)
+    {
+        if (player != null)
+            FaceTowards(player.position);
     }
 
 
