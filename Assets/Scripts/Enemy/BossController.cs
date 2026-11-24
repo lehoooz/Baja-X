@@ -37,12 +37,15 @@ public class BossController : EnemyBase
     [Header("Recovery")]
     [SerializeField] private float recoveryTime = 0.8f;
 
+    [Header("Kematian")]
+    [SerializeField] private float deathDelay = 1.0f; // jeda sebelum boss hilang, samakan dengan panjang clip Died
+
     private Transform player;
     private Rigidbody rb;
     private Renderer[] rends;
     private Color[] baseColors;
-    private Transform model;
-    private Vector3 baseScale;
+    private Animator anim;
+    private bool isDead;
 
     private float stateTimer;
     private float approachTimer;
@@ -61,9 +64,7 @@ public class BossController : EnemyBase
         rb.useGravity = true;
         rb.constraints = RigidbodyConstraints.FreezePositionZ | RigidbodyConstraints.FreezeRotation;
 
-        Transform m = transform.Find("Model");
-        model = m != null ? m : transform;
-        baseScale = model.localScale;
+        anim = GetComponentInChildren<Animator>();
 
         rends = GetComponentsInChildren<Renderer>();
         baseColors = new Color[rends.Length];
@@ -80,6 +81,7 @@ public class BossController : EnemyBase
         isActive = true;
         state = State.Approach;
         approachTimer = approachMinTime;
+        anim?.SetBool("isWalking", true);
         Debug.Log("[Boss] Aktif dari awal scene.");
     }
 
@@ -167,6 +169,8 @@ public class BossController : EnemyBase
         state = State.Telegraph;
         stateTimer = telegraphTime;
         SetColor(telegraphColor);
+        anim?.SetBool("isWalking", false);
+        anim?.SetTrigger("Telegraph");
     }
 
     private void TelegraphUpdate()
@@ -182,20 +186,21 @@ public class BossController : EnemyBase
                 Debug.Log("[Boss] Charge! Arah: " + chargeDir.x);
                 state = State.Charge;
                 stateTimer = chargeTime;
+                anim?.SetTrigger("Charge");
                 break;
             case State.Slam:
                 SlamDamage();
                 Debug.Log("[Boss] Slam! Radius: " + slamRadius);
-                if (model != transform)
-                    model.localScale = new Vector3(baseScale.x, baseScale.y * 0.7f, baseScale.z);
                 state = State.Slam;
                 stateTimer = slamDuration;
+                anim?.SetTrigger("Slam");
                 break;
             case State.Shoot:
                 ShootProjectile();
                 Debug.Log("[Boss] Shoot!");
                 state = State.Shoot;
-                stateTimer = 0.1f;
+                stateTimer = 0.3f;
+                anim?.SetTrigger("Shoot");
                 break;
             default:
                 EndAttack();
@@ -240,7 +245,6 @@ public class BossController : EnemyBase
     {
         if (stateTimer <= 0f)
         {
-            model.localScale = baseScale;
             EndAttack();
         }
     }
@@ -257,6 +261,7 @@ public class BossController : EnemyBase
             Debug.Log("[Boss] Approach");
             state = State.Approach;
             approachTimer = approachMinTime;
+            anim?.SetBool("isWalking", true);
         }
     }
 
@@ -266,6 +271,7 @@ public class BossController : EnemyBase
         rb.linearVelocity = new Vector3(0f, rb.linearVelocity.y, 0f);
         state = State.Recovery;
         stateTimer = recoveryTime;
+        anim?.SetTrigger("Recover");
     }
 
     private void SlamDamage()
@@ -313,5 +319,17 @@ public class BossController : EnemyBase
         if (rends == null) return;
         for (int i = 0; i < rends.Length; i++)
             rends[i].material.color = baseColors[i];
+    }
+
+    protected override void Die()
+    {
+        if (isDead) return;
+        isDead = true;
+        isActive = false;
+        rb.linearVelocity = Vector3.zero;
+        Collider col = GetComponent<Collider>();
+        if (col != null) col.enabled = false;
+        anim?.SetTrigger("Die");
+        Destroy(gameObject, deathDelay);
     }
 }
