@@ -52,6 +52,7 @@ public class PlayerMovement : MonoBehaviour
     private PlayerLedgeWall wall;
     private Vector3 knockbackVelocity;
     private float knockbackTimer;
+    private MovingPlatform groundPlatform;
 
     private void Awake()
     {
@@ -146,7 +147,8 @@ public class PlayerMovement : MonoBehaviour
             return;
         }
 
-        Rb.linearVelocity = new Vector3(MoveInput.x * speed, Rb.linearVelocity.y, MoveInput.y * speed);
+        Vector3 platformVel = groundPlatform != null ? groundPlatform.Velocity : Vector3.zero;
+        Rb.linearVelocity = new Vector3(MoveInput.x * speed + platformVel.x, Rb.linearVelocity.y, MoveInput.y * speed + platformVel.z);
     }
 
     // ---------- Knockback ----------
@@ -201,10 +203,27 @@ public class PlayerMovement : MonoBehaviour
     {
         if (groundCheckTransform == null) return;
 
-        isGround = Physics.CheckSphere(groundCheckTransform.position, groundCheckRadius, groundLayer);
+        Collider[] hits = Physics.OverlapSphere(groundCheckTransform.position, groundCheckRadius, groundLayer);
+        isGround = hits.Length > 0;
+        groundPlatform = null;
 
-        if (isGround) coyoteTimeCounter = coyoteTime;
-        else coyoteTimeCounter -= Time.deltaTime;
+        if (isGround)
+        {
+            coyoteTimeCounter = coyoteTime;
+            foreach (Collider hit in hits)
+            {
+                MovingPlatform mp = hit.GetComponent<MovingPlatform>();
+                if (mp != null)
+                {
+                    groundPlatform = mp;
+                    break;
+                }
+            }
+        }
+        else
+        {
+            coyoteTimeCounter -= Time.deltaTime;
+        }
     }
 
     private void OnDrawGizmosSelected()

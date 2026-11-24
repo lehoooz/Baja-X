@@ -64,7 +64,18 @@ public class PlayerLedgeWall : MonoBehaviour
         if (isGrabbingLedge)
         {
             if (movement.isGround || movement.RawMoveInput.y < -0.5f)
+            {
                 ReleaseLedge();
+                return;
+            }
+            // kalau dinding/ledge sudah tidak ada lagi (platform bergerak / hancur), lepas supaya tidak melayang di udara
+            Vector3 hangCheckPos = transform.position + Vector3.up * wallCheckHeight;
+            bool hangTouchingWall = Physics.CheckSphere(hangCheckPos, ledgeCheckRadius + ledgeForwardOffset, movement.GroundLayer);
+            if (!hangTouchingWall)
+            {
+                ReleaseLedge();
+                return;
+            }
             return;
         }
 
