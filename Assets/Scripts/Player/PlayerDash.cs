@@ -21,6 +21,7 @@ public class PlayerDash : MonoBehaviour
     private PlayerIntangibility intangibility;
     private CapsuleCollider playerCollider;
     private readonly HashSet<EnemyBase> dashHitEnemies = new HashSet<EnemyBase>();
+    private readonly HashSet<DestructibleObject> dashHitObjects = new HashSet<DestructibleObject>();
 
     private void Awake()
     {
@@ -59,6 +60,7 @@ public class PlayerDash : MonoBehaviour
 
         // dash menembus musuh (tidak tertahan / terjepit)
         dashHitEnemies.Clear();
+        dashHitObjects.Clear();
         if (intangibility != null)
             intangibility.BeginIntangibility(dashDistance / dashSpeed);
         else
@@ -84,8 +86,8 @@ public class PlayerDash : MonoBehaviour
         canDash = true;
     }
 
-    // cek musuh yang bersentuhan dengan kapsul player selama dash.
-    // tiap musuh kena damage sekali per dash. Boss TIDAK kena damage —
+    // cek musuh dan benda hancur yang bersentuhan dengan kapsul player selama dash.
+    // tiap target kena damage sekali per dash. Boss TIDAK kena damage —
     // dash hanya menembus boss, tidak melukai dia.
     private void CheckDashDamage()
     {
@@ -99,17 +101,30 @@ public class PlayerDash : MonoBehaviour
         Collider[] hits = Physics.OverlapCapsule(top, bottom, playerCollider.radius);
         foreach (Collider hit in hits)
         {
+            // musuh (tidak termasuk boss)
             EnemyBase enemy = hit.GetComponentInParent<EnemyBase>();
-            if (enemy == null) continue;
-            if (enemy is BossController) continue; // boss tidak kena damage dash
-            if (dashHitEnemies.Contains(enemy)) continue;
-
-            dashHitEnemies.Add(enemy);
-            Health hp = enemy.GetComponent<Health>();
-            if (hp != null)
+            if (enemy != null && !(enemy is BossController) && !dashHitEnemies.Contains(enemy))
             {
-                hp.TakeDamage(dashDamage);
-                Debug.Log("[Dash] Kena " + enemy.name + ", damage " + dashDamage);
+                dashHitEnemies.Add(enemy);
+                Health hp = enemy.GetComponent<Health>();
+                if (hp != null)
+                {
+                    hp.TakeDamage(dashDamage);
+                    Debug.Log("[Dash] Kena " + enemy.name + ", damage " + dashDamage);
+                }
+            }
+
+            // benda yang bisa dihancurkan (tong, peti)
+            DestructibleObject destructible = hit.GetComponentInParent<DestructibleObject>();
+            if (destructible != null && !dashHitObjects.Contains(destructible))
+            {
+                dashHitObjects.Add(destructible);
+                Health hp = destructible.GetComponent<Health>();
+                if (hp != null)
+                {
+                    hp.TakeDamage(dashDamage);
+                    Debug.Log("[Dash] Hancur " + destructible.name + ", damage " + dashDamage);
+                }
             }
         }
     }

@@ -99,6 +99,19 @@ public class PlayerIntangibility : MonoBehaviour
                     ignoredColliders.Add(c);
                 }
             }
+            // benda yang bisa dihancurkan (tong, peti) juga ditembus saat dash/i-frames
+            DestructibleObject[] objects = FindObjectsByType<DestructibleObject>();
+            foreach (DestructibleObject obj in objects)
+            {
+                Collider[] cols = obj.GetComponentsInChildren<Collider>();
+                foreach (Collider c in cols)
+                {
+                    if (c.isTrigger) continue;
+                    if (c == playerCollider) continue;
+                    Physics.IgnoreCollision(playerCollider, c, true);
+                    ignoredColliders.Add(c);
+                }
+            }
         }
         else
         {
