@@ -6,11 +6,12 @@ public class BreakablePlatform : MonoBehaviour
     [Header("Hancur")]
     [SerializeField] private float breakDelay = 0.8f;
     [SerializeField] private float respawnDelay = 3f;
-    [SerializeField] private float shakeAmount = 0.05f;
+    [SerializeField] private Color warningColor = Color.red;
 
     private Collider col;
     private Renderer rend;
-    private Vector3 startPos;
+    private Material mat;
+    private Color originalColor;
     private float breakTimer;
     private float respawnTimer;
     private bool isPlayerOn;
@@ -20,7 +21,11 @@ public class BreakablePlatform : MonoBehaviour
     {
         col = GetComponent<Collider>();
         rend = GetComponentInChildren<Renderer>();
-        startPos = transform.position;
+        if (rend != null)
+        {
+            mat = rend.material;
+            originalColor = mat.color;
+        }
     }
 
     private void Update()
@@ -39,27 +44,29 @@ public class BreakablePlatform : MonoBehaviour
         if (isPlayerOn)
         {
             breakTimer += Time.deltaTime;
-            Vector3 shake = new Vector3(Random.Range(-1f, 1f), Random.Range(-1f, 1f), 0f) * shakeAmount * (breakTimer / breakDelay);
-            transform.position = startPos + shake;
+            // peringatan: warna berubah makin merah saat mendekati hancur
+            if (mat != null)
+                mat.color = Color.Lerp(originalColor, warningColor, breakTimer / breakDelay);
             if (breakTimer >= breakDelay)
                 Break();
         }
         else
         {
             breakTimer = 0f;
-            transform.position = startPos;
+            if (mat != null)
+                mat.color = originalColor;
         }
     }
 
     private void OnCollisionEnter(Collision collision)
     {
-        if (IsPlayerFromTopOrSide(collision))
+        if (collision.gameObject.GetComponent<PlayerMovement>() != null)
             isPlayerOn = true;
     }
 
     private void OnCollisionStay(Collision collision)
     {
-        if (IsPlayerFromTopOrSide(collision))
+        if (collision.gameObject.GetComponent<PlayerMovement>() != null)
             isPlayerOn = true;
     }
 
@@ -69,20 +76,12 @@ public class BreakablePlatform : MonoBehaviour
             isPlayerOn = false;
     }
 
-    private bool IsPlayerFromTopOrSide(Collision collision)
-    {
-        if (collision.gameObject.GetComponent<PlayerMovement>() == null) return false;
-        if (collision.contacts.Length == 0) return false;
-        return collision.contacts[0].normal.y > -0.5f;
-    }
-
     private void Break()
     {
         isBroken = true;
         isPlayerOn = false;
         col.enabled = false;
         if (rend != null) rend.enabled = false;
-        transform.position = startPos;
         respawnTimer = respawnDelay;
     }
 
@@ -92,5 +91,6 @@ public class BreakablePlatform : MonoBehaviour
         breakTimer = 0f;
         col.enabled = true;
         if (rend != null) rend.enabled = true;
+        if (mat != null) mat.color = originalColor;
     }
 }
