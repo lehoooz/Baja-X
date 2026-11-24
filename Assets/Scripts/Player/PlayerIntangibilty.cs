@@ -87,7 +87,7 @@ public class PlayerIntangibility : MonoBehaviour
             // cari semua musuh (Walker, Flyer, Turret, Boss) lalu matikan
             // tumbukan fisik player dengan Collider solid mereka saja.
             // Collider trigger (mis. jangkauan deteksi turret) tidak disentuh.
-            EnemyBase[] enemies = FindObjectsOfType<EnemyBase>();
+            EnemyBase[] enemies = FindObjectsByType<EnemyBase>();
             foreach (EnemyBase enemy in enemies)
             {
                 Collider[] cols = enemy.GetComponentsInChildren<Collider>();
