@@ -23,7 +23,7 @@ public class BossController : EnemyBase
 
     [Header("Telegraph")]
     [SerializeField] private float telegraphTime = 0.5f;
-    [SerializeField] private Color telegraphColor = Color.red;
+    
 
     [Header("Charge")]
     [SerializeField] private float chargeSpeed = 14f;
@@ -81,21 +81,35 @@ public class BossController : EnemyBase
 
     private void Start()
     {
-        if (GameManager.Instance != null && GameManager.Instance.Player != null)
-            player = GameManager.Instance.Player;
-
-        movement?.Setup(walkSpeed);
-        charge?.Setup(chargeSpeed, groundLayer);
-        attack?.Setup(slamRadius, slamDamage, slamKnockback, slamKnockbackPopUp, bossProjectilePrefab, firePoint);
-        bossAnim?.Setup(telegraphColor);
-
-        // boss langsung aktif, mulai dengan telegraph charge pertama
+        player = GameManager.Instance.Player;
+        movement.Setup(walkSpeed);
+        charge.Setup(chargeSpeed, groundLayer);
+        attack.Setup(slamRadius, slamDamage, slamKnockback, slamKnockbackPopUp, bossProjectilePrefab, firePoint);
+        phase = Phase.Charge;
+        phaseAttackDone = 0;
+        isActive = false; // boss diam dulu, tunggu player masuk trigger
+        bossAnim?.PlayWalk(false);
+    }
+    public void Activate()
+    {
+        if (isDead || isActive) return;
         isActive = true;
         phase = Phase.Charge;
         phaseAttackDone = 0;
-        nextAttack = State.Charge;
+        Debug.Log("[Boss] Aktif, player masuk trigger");
         BeginTelegraph();
-        Debug.Log("[Boss] Aktif dari awal scene. Fase: Charge (2x).");
+    }
+
+    public void Deactivate()
+    {
+        if (isDead || !isActive) return;
+        isActive = false;
+        rb.linearVelocity = Vector3.zero;
+        bossAnim?.PlayWalk(false);
+        bossAnim?.PlayRecover();
+        state = State.Recovery;
+        stateTimer = 0f;
+        Debug.Log("[Boss] Nonaktif, player keluar trigger");
     }
 
     private void FixedUpdate()
@@ -126,7 +140,6 @@ public class BossController : EnemyBase
     {
         state = State.Telegraph;
         stateTimer = telegraphTime;
-        bossAnim?.SetTelegraphColor();
         bossAnim?.PlayWalk(false);
         bossAnim?.PlayTelegraph();
         Debug.Log("[Boss] Telegraph -> serangan: " + nextAttack + " (fase " + phase + ", " + (phaseAttackDone + 1) + "/" + PhaseTarget(phase) + ")");
@@ -150,7 +163,6 @@ public class BossController : EnemyBase
         movement.FacePlayer();
         if (stateTimer > 0f) return;
 
-        bossAnim?.RestoreColor();
         switch (nextAttack)
         {
             case State.Charge:
@@ -257,8 +269,8 @@ public class BossController : EnemyBase
         isDead = true;
         isActive = false;
         rb.linearVelocity = Vector3.zero;
-        Collider col = GetComponent<Collider>();
-        if (col != null) col.enabled = false;
+        rb.isKinematic = true; // matikan fisika supaya tidak jatuh menembus tanah
+        GetComponent<Collider>().enabled = false;
         bossAnim?.PlayDie();
         Destroy(gameObject, deathDelay);
     }

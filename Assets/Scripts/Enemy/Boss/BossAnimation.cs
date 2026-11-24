@@ -5,12 +5,7 @@ public class BossAnimation : MonoBehaviour
     private Animator anim;
     private Renderer[] rends;
     private Color[] baseColors;
-    private Color telegraphColor = Color.red;
 
-    public void Setup(Color telegraphColor)
-    {
-        this.telegraphColor = telegraphColor;
-    }
 
     private void Awake()
     {
@@ -29,18 +24,4 @@ public class BossAnimation : MonoBehaviour
     public void PlayRecover() { anim?.SetTrigger("Recover"); }
     public void PlayDie() { anim?.SetTrigger("Die"); }
 
-    public void SetTelegraphColor() { SetColor(telegraphColor); }
-
-    public void RestoreColor()
-    {
-        if (rends == null) return;
-        for (int i = 0; i < rends.Length; i++)
-            rends[i].material.color = baseColors[i];
-    }
-
-    private void SetColor(Color c)
-    {
-        if (rends == null) return;
-        foreach (Renderer r in rends) r.material.color = c;
-    }
 }
