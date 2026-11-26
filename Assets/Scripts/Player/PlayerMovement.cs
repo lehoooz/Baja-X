@@ -53,6 +53,9 @@ public class PlayerMovement : MonoBehaviour
     private Vector3 knockbackVelocity;
     private float knockbackTimer;
     private MovingPlatform groundPlatform;
+    private bool wasGround = true; // untuk deteksi mendarat (true di awal supaya tidak bunyi waktu spawn)
+    private float stepTimer;
+    [SerializeField] private float stepInterval = 0.35f; // jeda antar langkah lari
 
     private void Awake()
     {
@@ -104,6 +107,7 @@ public class PlayerMovement : MonoBehaviour
 
         Moving();
         ApplyGravity();
+        PlayFootsteps();
     }
 
     // ---------- Lompat ----------
@@ -119,6 +123,7 @@ public class PlayerMovement : MonoBehaviour
         {
             wall.ReleaseLedge();
             Rb.linearVelocity = new Vector3(Rb.linearVelocity.x, jumpForce, Rb.linearVelocity.z);
+            AudioManager.Instance?.PlayJump();
             coyoteTimeCounter = 0f;
         }
     }
@@ -149,6 +154,23 @@ public class PlayerMovement : MonoBehaviour
 
         Vector3 platformVel = groundPlatform != null ? groundPlatform.Velocity : Vector3.zero;
         Rb.linearVelocity = new Vector3(MoveInput.x * speed + platformVel.x, Rb.linearVelocity.y, MoveInput.y * speed + platformVel.z);
+    }
+    // ---------- Langkah lari ----------
+    private void PlayFootsteps()
+    {
+        if (isGround && isMoving)
+        {
+            stepTimer += Time.fixedDeltaTime;
+            if (stepTimer >= stepInterval)
+            {
+                AudioManager.Instance?.PlayRunStep();
+                stepTimer = 0f;
+            }
+        }
+        else
+        {
+            stepTimer = 0f;
+        }
     }
 
     // ---------- Knockback ----------
@@ -204,7 +226,15 @@ public class PlayerMovement : MonoBehaviour
         if (groundCheckTransform == null) return;
 
         Collider[] hits = Physics.OverlapSphere(groundCheckTransform.position, groundCheckRadius, groundLayer);
-        isGround = hits.Length > 0;
+        bool nowGround = hits.Length > 0;
+
+        // Baru saja mendarat (sebelumnya di udara, sekarang di tanah) → bunyi land.
+        if (nowGround && !wasGround)
+        {
+            AudioManager.Instance?.PlayLand();
+        }
+        wasGround = nowGround;
+        isGround = nowGround;
         groundPlatform = null;
 
         if (isGround)

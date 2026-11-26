@@ -77,6 +77,7 @@ public class PlayerShoot : MonoBehaviour
         Vector3 pos = firePoint != null ? firePoint.position : transform.position + Vector3.up;
         Projectile p = Instantiate(projectilePrefab, pos, Quaternion.LookRotation(shootDir));
         p.Launch(shootDir);
+        AudioManager.Instance?.PlayShoot();
     }
 
 }

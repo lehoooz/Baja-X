@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 /// <summary>
 /// Mengatur alur game: game over saat pemain mati, stage clear saat boss mati.
@@ -36,6 +37,16 @@ public class GameManager : MonoBehaviour
         respawnPoint = initialSpawnPoint != null ? initialSpawnPoint.position : player.position;
         playerHealth = player.GetComponent<Health>();
         playerHealth.OnDeath.AddListener(GameOver);
+        playerHealth.OnDamaged.AddListener((damage) => AudioManager.Instance?.PlayHurt());
+    }
+
+    private void Start()
+    {
+        // Mainkan BGM stage hanya di Level1 (di LevelBos, BGM boss dimainkan saat boss aktif).
+        if (SceneManager.GetActiveScene().name == "Level1")
+        {
+            AudioManager.Instance?.PlayStageMusic();
+        }
     }
 
     public void SetRespawnPoint(Vector3 point)
@@ -64,6 +75,7 @@ public class GameManager : MonoBehaviour
     {
         if (isGameEnded) return;
         isGameEnded = true;
+        AudioManager.Instance?.PlayDeath();
         Debug.Log("STAGE CLEAR!");
         StartCoroutine(ShowStageClearAfterDelay());
     }

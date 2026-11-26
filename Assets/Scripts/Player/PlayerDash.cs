@@ -53,6 +53,7 @@ public class PlayerDash : MonoBehaviour
         // Fase 1: Mulai & kunci status
         canDash = false;
         isDashing = true;
+        AudioManager.Instance?.PlayDash();
         movement.ClearKnockback();
         health.GrantInvincibility(dashDistance / dashSpeed);
         wall.ClearAll();

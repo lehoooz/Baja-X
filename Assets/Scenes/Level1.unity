@@ -268,7 +268,7 @@ GameObject:
   - component: {fileID: 36653122}
   - component: {fileID: 36653121}
   - component: {fileID: 36653120}
-  - component: {fileID: 36653119}
+  - component: {fileID: 36653123}
   m_Layer: 0
   m_Name: AudioManager
   m_TagString: Untagged
@@ -276,18 +276,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &36653119
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 36653118}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2a434936c6d810e47be330b19e475468, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::AudioManager
 --- !u!82 &36653120
 AudioSource:
   m_ObjectHideFlags: 0
@@ -497,6 +485,46 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &36653123
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 36653118}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2a434936c6d810e47be330b19e475468, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AudioManager
+  musicSource: {fileID: 36653121}
+  sfxSource: {fileID: 36653120}
+  musicVolume: 0.5
+  sfxVolume: 0.8
+  stageBGM: {fileID: 8300000, guid: 819f9a39962b36a4eb2cf13270bd6158, type: 3}
+  bossBGM: {fileID: 0}
+  shootClip: {fileID: 8300000, guid: 1d5e6b590a2cac5429fc4824bdc6be19, type: 3}
+  jumpClip: {fileID: 8300000, guid: 0a481aad951b06d4797c3f8084748f4a, type: 3}
+  dashClip: {fileID: 8300000, guid: e25c829e1e0de774fb2e864b9a81c4a4, type: 3}
+  hurtClip: {fileID: 8300000, guid: 95f580bd38992ba418b9d66e1e450ab6, type: 3}
+  deathClip: {fileID: 8300000, guid: 1e341ac3ce211ef4098d6d00107c5f4c, type: 3}
+  landClip: {fileID: 8300000, guid: 418e5ad51d452ce4ea8073153afcab72, type: 3}
+  runClips:
+  - {fileID: 8300000, guid: 0b806dcd918af724ea6c1ea628b72203, type: 3}
+  - {fileID: 8300000, guid: 1ca7f18c1de667d4bb89436cef893c6b, type: 3}
+  - {fileID: 8300000, guid: 31392fac44b93254da2f1e7f3befbeba, type: 3}
+  - {fileID: 8300000, guid: 7baa4dcbdce6af948a9443e6b8daae28, type: 3}
+  - {fileID: 8300000, guid: f3e6e65ea2419494e98cd902cf0c0bcd, type: 3}
+  hitClip: {fileID: 0}
+  enemyDeathClip: {fileID: 0}
+  explosionClip: {fileID: 0}
+  bossShootClip: {fileID: 0}
+  bossSlamClip: {fileID: 0}
+  bossDeathClip: {fileID: 0}
+  buttonClickClip: {fileID: 0}
+  checkpointClip: {fileID: 0}
+  stageClearClip: {fileID: 0}
+  gameOverClip: {fileID: 0}
 --- !u!1 &70469726
 GameObject:
   m_ObjectHideFlags: 0
@@ -2875,6 +2903,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 8
   knockbackDuration: 0.25
+  stepInterval: 0.27
 --- !u!114 &700231509
 MonoBehaviour:
   m_ObjectHideFlags: 0

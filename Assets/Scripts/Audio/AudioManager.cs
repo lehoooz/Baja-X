@@ -26,6 +26,8 @@ public class AudioManager : MonoBehaviour
     [SerializeField] private AudioClip dashClip;
     [SerializeField] private AudioClip hurtClip;
     [SerializeField] private AudioClip deathClip;
+    [SerializeField] private AudioClip landClip;
+    [SerializeField] private AudioClip[] runClips; // suara langkah lari (5 file), diputar acak
 
     [Header("SFX Musuh & Combat")]
     [SerializeField] private AudioClip hitClip;        // peluru kena musuh
@@ -87,6 +89,13 @@ public class AudioManager : MonoBehaviour
     public void PlayDash() => PlaySFX(dashClip);
     public void PlayHurt() => PlaySFX(hurtClip);
     public void PlayDeath() => PlaySFX(deathClip);
+    public void PlayLand() => PlaySFX(landClip);
+    public void PlayRunStep()
+    {
+        if (runClips == null || runClips.Length == 0) return;
+        AudioClip clip = runClips[Random.Range(0, runClips.Length)];
+        PlaySFX(clip);
+    }
     public void PlayHit() => PlaySFX(hitClip);
     public void PlayEnemyDeath() => PlaySFX(enemyDeathClip);
     public void PlayExplosion() => PlaySFX(explosionClip);

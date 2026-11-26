@@ -94,6 +94,7 @@ public class BossController : EnemyBase
     {
         if (isDead || isActive) return;
         isActive = true;
+        AudioManager.Instance?.PlayBossMusic();
         phase = Phase.Charge;
         phaseAttackDone = 0;
         Debug.Log("[Boss] Aktif, player masuk trigger");
