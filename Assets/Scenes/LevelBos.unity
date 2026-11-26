@@ -1081,8 +1081,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 104.6, y: 4.53, z: 7.78}
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Size: {x: 104.6, y: 16.554525, z: 7.78}
+  m_Center: {x: 0, y: 6.0122623, z: 0}
 --- !u!114 &798341602
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1372,6 +1372,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1d60ed726dfee8248be309035936f352, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BossAnimation
+  chargeBlendSpeed: 5
 --- !u!1 &1363142096
 GameObject:
   m_ObjectHideFlags: 0
