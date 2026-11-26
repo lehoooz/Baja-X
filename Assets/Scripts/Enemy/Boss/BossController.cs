@@ -274,6 +274,7 @@ public class BossController : EnemyBase
         rb.isKinematic = true; // matikan fisika supaya tidak jatuh menembus tanah
         GetComponent<Collider>().enabled = false;
         bossAnim?.PlayDie();
+        GameManager.Instance?.StageClear();
         Destroy(gameObject, deathDelay);
     }
 }
