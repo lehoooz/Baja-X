@@ -23,7 +23,11 @@ public class BossAnimation : MonoBehaviour
     }
 
     public void PlayWalk(bool walking) { anim?.SetBool("isWalking", walking); }
-    public void PlayTelegraph() { anim?.SetTrigger("Telegraph"); }
+    public void PlayTelegraph()
+    {
+        ResetTriggers();
+        anim?.SetTrigger("Telegraph");
+    }
     public void PlayCharge()
     {
         anim?.SetBool("isWalking", true);
@@ -37,4 +41,13 @@ public class BossAnimation : MonoBehaviour
     public void PlayShoot() { anim?.SetTrigger("Shoot"); }
     public void PlayRecover() { anim?.SetTrigger("Recover"); }
     public void PlayDie() { anim?.SetTrigger("Die"); }
+
+    private void ResetTriggers()
+    {
+        if (anim == null) return;
+        anim.ResetTrigger("Slam");
+        anim.ResetTrigger("Shoot");
+        anim.ResetTrigger("Recover");
+        anim.ResetTrigger("Telegraph");
+    }
 }

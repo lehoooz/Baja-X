@@ -240,9 +240,9 @@ public class BossController : EnemyBase
         rb.linearVelocity = new Vector3(0f, rb.linearVelocity.y, 0f);
         state = State.Recovery;
         stateTimer = recoveryTime;
+        bossAnim?.PlayWalk(false);
         bossAnim?.StopChargeLayer();
         bossAnim?.PlayRecover();
-
     }
 
     private int PhaseTarget(Phase p)
