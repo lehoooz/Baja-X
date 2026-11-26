@@ -94,6 +94,14 @@ public class GameManager : MonoBehaviour
         var ledgeWall = player.GetComponent<PlayerLedgeWall>();
         if (ledgeWall != null) ledgeWall.enabled = enabled;
         var rb = player.GetComponent<Rigidbody>();
-        if (rb != null && !enabled) rb.linearVelocity = Vector3.zero;
+        if (rb != null)
+        {
+            rb.linearVelocity = Vector3.zero;
+            // Gravitasi pemain itu custom dari PlayerMovement (useGravity = false).
+            // Waktu PlayerMovement dimatikan, gravitasi ikut mati dan pemain melayang.
+            // Jadi selama pemain mati, nyalakan gravitasi bawaan Unity supaya jatuh ke tanah.
+            // Waktu hidup lagi, matikan lagi supaya gravitasi custom yang bekerja.
+            rb.useGravity = !enabled;
+        }
     }
 }

@@ -19,22 +19,15 @@ public class UIManager : MonoBehaviour
     private void Awake()
     {
         if (stageClearPanel != null) stageClearPanel.SetActive(false);
-        else Debug.LogError("[UI] StageClearPanel belum di-drag ke UIManager!");
-
         if (gameOverPanel != null) gameOverPanel.SetActive(false);
-        else Debug.LogError("[UI] GameOverPanel belum di-drag ke UIManager!");
 
         if (restartButton != null) restartButton.onClick.AddListener(RestartScene);
-        else Debug.LogError("[UI] RestartButton belum di-drag ke UIManager!");
-
         if (quitButton != null) quitButton.onClick.AddListener(QuitGame);
-        else Debug.LogError("[UI] QuitButton belum di-drag ke UIManager!");
 
-        if (respawnButton != null) respawnButton.onClick.AddListener(RespawnAtCheckpoint);
-        else Debug.LogError("[UI] RespawnButton belum di-drag ke UIManager!");
-
+        // Tombol di panel Game Over sekarang me-restart scene dari awal
+        // (bukan teleport ke checkpoint) — sama seperti tombol restart di Stage Clear.
+        if (respawnButton != null) respawnButton.onClick.AddListener(RestartScene);
         if (retryButton != null) retryButton.onClick.AddListener(RestartScene);
-        else Debug.LogError("[UI] RetryButton belum di-drag ke UIManager!");
     }
 
     public void ShowStageClear()
@@ -49,13 +42,6 @@ public class UIManager : MonoBehaviour
         if (gameOverPanel == null) return;
         gameOverPanel.SetActive(true);
         Time.timeScale = 0f;
-    }
-
-    public void RespawnAtCheckpoint()
-    {
-        if (gameOverPanel != null) gameOverPanel.SetActive(false);
-        Time.timeScale = 1f;
-        if (GameManager.Instance != null) GameManager.Instance.RespawnPlayer();
     }
 
     public void RestartScene()
