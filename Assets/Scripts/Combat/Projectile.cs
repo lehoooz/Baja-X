@@ -40,6 +40,7 @@ public class Projectile : MonoBehaviour
         Health health = other.GetComponent<Health>();
         if (health == null) health = other.GetComponentInParent<Health>();
         if (health != null) health.TakeDamage(damage);
+        if (other.gameObject.layer == LayerMask.NameToLayer("Enemy")) AudioManager.Instance?.PlayHit();
 
         EnemyBase enemy = other.GetComponent<EnemyBase>();
         if (enemy == null) enemy = other.GetComponentInParent<EnemyBase>();

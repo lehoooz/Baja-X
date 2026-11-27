@@ -37,6 +37,7 @@ public abstract class EnemyBase : MonoBehaviour
     protected virtual void Die()
     {
         // Nanti: efek ledakan / drop item di sini
+        AudioManager.Instance?.PlayEnemyDeath();
         Destroy(gameObject);
     }
 
