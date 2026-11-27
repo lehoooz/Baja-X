@@ -28,7 +28,6 @@ public class MainMenuManager : MonoBehaviour
         if (controlsPanel != null)
             controlsPanel.SetActive(false);
     }
-z
     public void QuitGame()
     {
         Debug.Log("Keluar dari game");
