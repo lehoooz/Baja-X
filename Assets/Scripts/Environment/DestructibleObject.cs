@@ -25,6 +25,7 @@ public class DestructibleObject : MonoBehaviour
     {
         if (destroyEffectPrefab != null)
             Instantiate(destroyEffectPrefab, transform.position, Quaternion.identity);
+        AudioManager.Instance?.PlayExplosion();
         Destroy(gameObject);
     }
 }
